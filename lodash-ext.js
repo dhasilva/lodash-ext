@@ -1,9 +1,9 @@
-import _ from 'lodash'
-import camelizeKeys from './camelize-keys'
-import deleteBlanks from './delete-blanks'
-import dig from './dig'
-import { isBlank, isPresent } from './is-blank'
-import snakeizeKeys from './snakeize-keys'
+const _ = require('lodash')
+const camelizeKeys = require('./camelize-keys')
+const deleteBlanks = require('./delete-blanks')
+const dig = require('./dig')
+const { isBlank, isPresent } = require('./is-blank')
+const snakeizeKeys = require('./snakeize-keys')
 
 const lodashExt = Object.assign({}, _, {
 
@@ -33,4 +33,5 @@ const lodashExt = Object.assign({}, _, {
 
 })
 
-export default lodashExt
+// export default lodashExt
+module.exports = lodashExt

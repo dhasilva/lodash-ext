@@ -1,4 +1,4 @@
-import _ from 'lodash'
+const _ = require('lodash')
 
 /**
  * "Digs" the object searching for nested properties, ensuring it exists - or returning null.
@@ -32,4 +32,5 @@ function dig(object, ...keys) {
   return dug
 }
 
-export default dig
+// export default dig
+module.exports = dig

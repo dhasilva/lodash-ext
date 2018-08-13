@@ -1,4 +1,4 @@
-import _ from 'lodash'
+const _ = require('lodash')
 
 /**
  * Creates a new object transforming all of its properties to snake_case format.
@@ -44,4 +44,5 @@ function snakeizeKeys(value) {
   return _.snakeCase(value)
 }
 
-export default snakeizeKeys
+// export default snakeizeKeys
+module.exports = snakeizeKeys
