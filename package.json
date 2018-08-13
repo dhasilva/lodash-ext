@@ -1,0 +1,13 @@
+{
+  "name": "@caiena/lodash-ext",
+  "version": "0.1.0",
+  "description": "Lodash extended",
+  "main": "index.js",
+  "repository": "github.com/caiena/lodash-ext",
+  "author": "Pedro de Assis <pedro@caiena.net>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
+}
