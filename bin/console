@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --experimental-repl-await
 
 /**
  * Opens a node REPL with global variables already loaded:
@@ -31,6 +31,6 @@ let r = repl.start({
 })
 
 // requiring itself
-r.context.lodash = require('../index.js')
+r.context.lodash = require('../src/index.js')
 
 // add your dependencies here as you wish..

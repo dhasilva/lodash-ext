@@ -1,16 +1,26 @@
 {
   "name": "@caiena/lodash-ext",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Lodash extended",
-  "main": "index.js",
+  "main": "dist/lodash-ext.js",
   "repository": "github.com/caiena/lodash-ext",
   "author": "Pedro de Assis <pedro@caiena.net>",
   "license": "MIT",
   "private": false,
   "scripts": {
-    "console": "node ./bin/console"
+    "console": "node ./bin/console",
+    "prebuild": "rm -rf ./dist/*",
+    "build": "yarn run build:umd",
+    "build:umd": "webpack --output-filename lodash-ext.js --mode production",
+    "//build:umd": "webpack --output-filename lodash-ext.umd.min.js --mode production",
+    "//build:umd.dev": "webpack --output-filename lodash-ext.umd.js --mode development"
   },
-  "dependencies": {
-    "lodash": "^4.17.10"
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "babel-loader": "^8.0.5",
+    "lodash": "^4.17.11",
+    "webpack": "^4.29.2",
+    "webpack-cli": "^3.2.3"
   }
 }
