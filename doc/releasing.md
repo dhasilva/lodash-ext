@@ -10,3 +10,4 @@
 ## publishing
 - edit `package.json` file, bumping `version` key
 - run `yarn publish` (a `yarn login` is probably required)
+  + it'll ask for a new version and edit package.json if you provide it

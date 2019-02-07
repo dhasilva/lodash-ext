@@ -31,6 +31,6 @@ let r = repl.start({
 })
 
 // requiring itself
-r.context.lodash = require('../dist/lodash-ext.js').default
+r.context.lodash = require('../dist/lodash-ext.cjs.js')
 
 // add your dependencies here as you wish..
