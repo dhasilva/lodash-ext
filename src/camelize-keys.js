@@ -1,4 +1,5 @@
-const _ = require('lodash')
+// const _ = require('lodash')
+import _ from 'lodash'
 
 /**
  * Creates a new object, transforming all of its properties to camelCase format.
@@ -44,5 +45,6 @@ function camelizeKeys(value) {
   return _.camelCase(value)
 }
 
-// export default camelizeKeys
-module.exports = camelizeKeys
+
+// module.exports = camelizeKeys
+export default camelizeKeys

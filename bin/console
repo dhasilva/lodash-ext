@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-
+//
+// run with:
+// $ node bin/console --experimental-repl-await
+// $ .bin/console --experimental-repl-await
+//
 /**
  * Opens a node REPL with global variables already loaded:
  * - app - the express app
@@ -31,6 +35,6 @@ let r = repl.start({
 })
 
 // requiring itself
-r.context.lodash = require('../index.js')
+r.context.lodash = require('../dist/lodash-ext.cjs.js')
 
 // add your dependencies here as you wish..
