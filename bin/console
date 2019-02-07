@@ -1,5 +1,9 @@
-#!/usr/bin/env node --experimental-repl-await
-
+#!/usr/bin/env node
+//
+// run with:
+// $ node bin/console --experimental-repl-await
+// $ .bin/console --experimental-repl-await
+//
 /**
  * Opens a node REPL with global variables already loaded:
  * - app - the express app
