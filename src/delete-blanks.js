@@ -1,4 +1,5 @@
-const _ = require('lodash')
+// const _ = require('lodash')
+import _ from 'lodash'
 
 /**
  * Creates a new object, ignoring all keys/properties with "empty" values: null, undefined or empty objects or arrays.
@@ -32,5 +33,5 @@ function deleteBlanks(object) {
   return result
 }
 
-// export default deleteBlanks
-module.exports = deleteBlanks
+// module.exports = deleteBlanks
+export default deleteBlanks

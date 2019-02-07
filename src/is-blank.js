@@ -1,4 +1,5 @@
-const _ = require('lodash')
+// const _ = require('lodash')
+import _ from 'lodash'
 
 // inspired by Rails/ActiveSupport Object#blank?
 const isBlank = function isBlank(value) {
@@ -13,5 +14,7 @@ const isPresent = function isPresent(obj) {
   return !isBlank(obj);
 }
 
+// module.exports = { isBlank, isPresent }
 // export { isBlank, isPresent }
-module.exports = { isBlank, isPresent }
+export default isBlank
+export { isBlank, isPresent }

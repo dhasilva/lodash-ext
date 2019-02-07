@@ -1,4 +1,5 @@
-const lodashExt = require('./lodash-ext')
+// const lodashExt = require('./lodash-ext')
+import lodashExt from './lodash-ext'
 
-// export default lodashExt
-module.exports = lodashExt
+// module.exports = lodashExt
+export default lodashExt
