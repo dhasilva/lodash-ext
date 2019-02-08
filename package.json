@@ -6,11 +6,20 @@
   "module": "dist/lodash-ext.esm.js",
   "browser": "dist/lodash-ext.umd.js",
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
     "lodash": "^4.17.11"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
+    "@babel/register": "^7.0.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-change": "^2.1.2",
+    "chai-datetime": "^1.5.0",
+    "chai-subset": "^1.6.0",
+    "mocha": "^5.2.0",
+    "node-watch": "^0.6.0",
     "rollup": "^1.0.0",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
@@ -21,7 +30,11 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "pretest": "npm run build",
-    "test": "node test/test.js"
+    "test": "mocha --exit",
+    "test:all": "mocha --exit \"test/**/*.spec.js\"",
+    "test:watch": "node ./bin/mocha-watch",
+    "//test:watch": "mocha --watch \"test/**/*.spec.js\"",
+    "//test:watch2": "nodemon --config nodemon.test.json --exec 'mocha \"test/**/*.spec.js\" || true'"
   },
   "files": [
     "dist"

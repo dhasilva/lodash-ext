@@ -1,5 +1,5 @@
-// const _ = require('lodash')
 import _ from 'lodash'
+import { isBlank } from './is-blank'
 
 /**
  * Creates a new object, ignoring all keys/properties with "empty" values: null, undefined or empty objects or arrays.
@@ -17,21 +17,29 @@ import _ from 'lodash'
 function deleteBlanks(object) {
   let result = _.cloneDeep(object)
 
-  Object.keys(result).forEach((key) => {
-    let value = result[key]
-
+  _.forOwn(result, (value, key) => {
     if (_.isPlainObject(value) || _.isArray(value)) {
       result[key] = deleteBlanks(value)
 
-      if (_.isEmpty(result[key])) delete result[key]
+      if (_.isArray(result[key])) {
+        _.remove(result[key], isBlank)
+      }
 
-    } else if (value === null || value === undefined) {
+      if (isBlank(result[key])) {
+        delete result[key]
+      }
+
+    } else if (isBlank(value)) {
       delete result[key]
     }
   })
 
+  if (_.isArray(result)) {
+    _.remove(result, isBlank)
+  }
+
   return result
 }
 
-// module.exports = deleteBlanks
+
 export default deleteBlanks

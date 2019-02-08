@@ -26,7 +26,7 @@ const mimeType = {
 };
 
 http.createServer(function (req, res) {
-  console.log(`${req.method} ${req.url}`);
+  console.info(`${req.method} ${req.url}`);
 
   // parse URL
   const parsedUrl = url.parse(req.url);
@@ -69,4 +69,4 @@ http.createServer(function (req, res) {
 
 }).listen(parseInt(port));
 
-console.log(`Server listening on port ${port}`);
+console.info(`Server listening on port ${port}`);

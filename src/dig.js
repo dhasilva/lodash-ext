@@ -1,4 +1,3 @@
-// const _ = require('lodash')
 import _ from 'lodash'
 
 /**
@@ -19,19 +18,12 @@ import _ from 'lodash'
  * @return {Object}           value of the nested properti, or `undefined` if it does not exist
  */
 function dig(object, ...keys) {
-  let dug = object
+  // DEPRECATED
+  // use _.get() instead.
 
-  for (let i = 0; i < keys.length; i++) {
-    if (!_.isObjectLike(dug)) {
-      return dug
-    }
-
-    const key = keys[i]
-    dug = dug[key]
-  }
-
-  return dug
+  let path = _.join(keys, '.')
+  return _.get(object, path)
 }
 
-// module.exports = dig
+
 export default dig

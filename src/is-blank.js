@@ -1,4 +1,3 @@
-// const _ = require('lodash')
 import _ from 'lodash'
 
 // inspired by Rails/ActiveSupport Object#blank?
@@ -17,7 +16,6 @@ const isPresent = function isPresent(obj) {
   return !isBlank(obj);
 }
 
-// module.exports = { isBlank, isPresent }
-// export { isBlank, isPresent }
+
 export default isBlank
 export { isBlank, isPresent }
