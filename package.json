@@ -6,11 +6,11 @@
   "module": "dist/lodash-ext.esm.js",
   "browser": "dist/lodash-ext.umd.js",
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
     "lodash": "^4.17.11"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.0.0",
     "chai": "^4.2.0",
