@@ -17130,10 +17130,9 @@
 	function deepCamelizeKeys(object) {
 	  var camelized = lodash.cloneDeep(object);
 
-	  Object.keys(object).forEach(function (key) {
-	    var value = object[key]; // checks that a value is a plain object or an array - for recursive key conversion
+	  lodash.forOwn(object, function (value, key) {
+	    // checks that a value is a plain object or an array - for recursive key conversion
 	    // recursively update keys of any values that are also objects
-
 	    if (lodash.isPlainObject(value) || lodash.isArray(value)) {
 	      value = deepCamelizeKeys(value);
 	      camelized[key] = value;
@@ -17146,6 +17145,7 @@
 	      delete camelized[key];
 	    }
 	  });
+
 	  return camelized;
 	}
 
@@ -17155,9 +17155,27 @@
 	  }
 
 	  return lodash.camelCase(value);
-	} // module.exports = camelizeKeys
+	}
 
-	// const _ = require('lodash')
+	var isBlank = function isBlank(value) {
+	  switch (_typeof(value)) {
+	    case 'string':
+	      return !value.trim().length;
+
+	    case 'boolean':
+	      return false;
+
+	    default:
+	      // Rails like `blank?` - @https://github.com/lodash/lodash/issues/2261#issuecomment-211380044
+	      return lodash.isEmpty(value) && !lodash.isNumber(value) || lodash.isNaN(value);
+	  }
+	}; // inspired by Rails/ActiveSupport Object#present?
+
+
+	var isPresent = function isPresent(obj) {
+	  return !isBlank(obj);
+	};
+
 	/**
 	 * Creates a new object, ignoring all keys/properties with "empty" values: null, undefined or empty objects or arrays.
 	 *
@@ -17175,20 +17193,29 @@
 	function deleteBlanks(object) {
 	  var result = lodash.cloneDeep(object);
 
-	  Object.keys(result).forEach(function (key) {
-	    var value = result[key];
-
+	  lodash.forOwn(result, function (value, key) {
 	    if (lodash.isPlainObject(value) || lodash.isArray(value)) {
 	      result[key] = deleteBlanks(value);
-	      if (lodash.isEmpty(result[key])) delete result[key];
-	    } else if (value === null || value === undefined) {
+
+	      if (lodash.isArray(result[key])) {
+	        lodash.remove(result[key], isBlank);
+	      }
+
+	      if (isBlank(result[key])) {
+	        delete result[key];
+	      }
+	    } else if (isBlank(value)) {
 	      delete result[key];
 	    }
 	  });
-	  return result;
-	} // module.exports = deleteBlanks
 
-	// const _ = require('lodash')
+	  if (lodash.isArray(result)) {
+	    lodash.remove(result, isBlank);
+	  }
+
+	  return result;
+	}
+
 	/**
 	 * "Digs" the object searching for nested properties, ensuring it exists - or returning null.
 	 * Inspired by Ruby Object#dig.
@@ -17208,38 +17235,16 @@
 	 */
 
 	function dig(object) {
-	  var dug = object;
-
-	  for (var i = 0; i < (arguments.length <= 1 ? 0 : arguments.length - 1); i++) {
-	    if (!lodash.isObjectLike(dug)) {
-	      return dug;
-	    }
-
-	    var key = i + 1 < 1 || arguments.length <= i + 1 ? undefined : arguments[i + 1];
-	    dug = dug[key];
+	  for (var _len = arguments.length, keys = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	    keys[_key - 1] = arguments[_key];
 	  }
 
-	  return dug;
-	} // module.exports = dig
+	  // DEPRECATED
+	  // use _.get() instead.
+	  var path = lodash.join(keys, '.');
 
-	var isBlank = function isBlank(value) {
-	  switch (_typeof(value)) {
-	    case 'string':
-	      return !value.trim().length;
-
-	    case 'boolean':
-	      return false;
-
-	    default:
-	      // Rails like `blank?` - @https://github.com/lodash/lodash/issues/2261#issuecomment-211380044
-	      return lodash.isEmpty(value) && !lodash.isNumber(value) || lodash.isNaN(value);
-	  }
-	}; // inspired by Rails/ActiveSupport Object#present?
-
-
-	var isPresent = function isPresent(obj) {
-	  return !isBlank(obj);
-	}; // module.exports = { isBlank, isPresent }
+	  return lodash.get(object, path);
+	}
 
 	/**
 	 * Creates a new object transforming all of its properties to snake_case format.
@@ -17259,10 +17264,9 @@
 	function deepSnakeizeKeys(object) {
 	  var snakeized = lodash.cloneDeep(object);
 
-	  Object.keys(object).forEach(function (key) {
-	    var value = object[key]; // checks that a value is a plain object or an array - for recursive key conversion
+	  lodash.forOwn(object, function (value, key) {
+	    // checks that a value is a plain object or an array - for recursive key conversion
 	    // recursively update keys of any values that are also objects
-
 	    if (lodash.isPlainObject(value) || lodash.isArray(value)) {
 	      value = deepSnakeizeKeys(value);
 	      snakeized[key] = value;
@@ -17275,6 +17279,7 @@
 	      delete snakeized[key];
 	    }
 	  });
+
 	  return snakeized;
 	}
 
@@ -17284,10 +17289,9 @@
 	  }
 
 	  return lodash.snakeCase(value);
-	} // module.exports = snakeizeKeys
+	}
 
-	// const _ = require('lodash')
-	var lodashExt = Object.assign({}, lodash, {
+	var lodashExt = lodash.assign({}, lodash, {
 	  // functions to handle object properties/keys transformation
 	  camelizeKeys: camelizeKeys,
 	  snakeizeKeys: snakeizeKeys,
@@ -17308,9 +17312,7 @@
 	  // merge:    _.merge,
 	  equals: lodash.isEqual,
 	  contains: lodash.isMatch
-	}); // module.exports = lodashExt
-
-	// const lodashExt = require('./lodash-ext')
+	});
 
 	return lodashExt;
 

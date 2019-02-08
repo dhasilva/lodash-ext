@@ -1,4 +1,3 @@
-// const _ = require('lodash')
 import _ from 'lodash'
 
 /**
@@ -18,8 +17,7 @@ import _ from 'lodash'
 function deepCamelizeKeys(object) {
   let camelized = _.cloneDeep(object)
 
-  Object.keys(object).forEach((key) => {
-    let value = object[key]
+  _.forOwn(object, (value, key) => {
 
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
@@ -46,5 +44,4 @@ function camelizeKeys(value) {
 }
 
 
-// module.exports = camelizeKeys
 export default camelizeKeys

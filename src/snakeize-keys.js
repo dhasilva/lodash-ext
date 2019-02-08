@@ -1,4 +1,3 @@
-// const _ = require('lodash')
 import _ from 'lodash'
 
 /**
@@ -18,8 +17,7 @@ import _ from 'lodash'
 function deepSnakeizeKeys(object) {
   let snakeized = _.cloneDeep(object)
 
-  Object.keys(object).forEach((key) => {
-    let value = object[key]
+  _.forOwn(object, (value, key) => {
 
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
@@ -45,5 +43,5 @@ function snakeizeKeys(value) {
   return _.snakeCase(value)
 }
 
-// module.exports = snakeizeKeys
+
 export default snakeizeKeys

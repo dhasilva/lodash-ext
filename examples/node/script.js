@@ -5,4 +5,4 @@ const distDir = path.join(__dirname, '..', '..', 'dist')
 
 const _ = require(path.join(distDir, 'lodash-ext.cjs.js'))
 
-console.log('lodash-ext keys:', Object.keys(_))
+console.info('lodash-ext keys:', Object.keys(_).sort())
