@@ -30,8 +30,9 @@ const lodashExt = _.assign({}, _, {
   // extend:   _.extend,
   // merge:    _.merge,
   equals:   _.isEqual,
-  contains: _.isMatch
+  contains: _.isMatch,
 
+  unaccent: _.deburr
 })
 
 
