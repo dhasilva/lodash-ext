@@ -4,7 +4,7 @@
 - `yarn run build`
 - `bin/console`
   - enter the node REPL and interact with `lodash`, which is the extended version
-  - sample: `lodash.isBlank(false)` should output `true`
+  - sample: `lodash.blank(false)` should output `true`
 
 
 ## publishing

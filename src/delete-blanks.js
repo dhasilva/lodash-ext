@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { isBlank } from './is-blank'
+import { blank } from './blank'
 
 /**
  * Creates a new object, ignoring all keys/properties with "empty" values: null, undefined or empty objects or arrays.
@@ -22,20 +22,20 @@ function deleteBlanks(object) {
       result[key] = deleteBlanks(value)
 
       if (_.isArray(result[key])) {
-        _.remove(result[key], isBlank)
+        _.remove(result[key], blank)
       }
 
-      if (isBlank(result[key])) {
+      if (blank(result[key])) {
         delete result[key]
       }
 
-    } else if (isBlank(value)) {
+    } else if (blank(value)) {
       delete result[key]
     }
   })
 
   if (_.isArray(result)) {
-    _.remove(result, isBlank)
+    _.remove(result, blank)
   }
 
   return result

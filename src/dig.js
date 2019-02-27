@@ -18,8 +18,7 @@ import _ from 'lodash'
  * @return {Object}           value of the nested properti, or `undefined` if it does not exist
  */
 function dig(object, ...keys) {
-  // DEPRECATED
-  // use _.get() instead.
+  // console.warn('DEPRECATED: _.dig is deprecated. Use _.get instead.')
 
   let path = _.join(keys, '.')
   return _.get(object, path)
