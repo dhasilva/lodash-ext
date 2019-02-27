@@ -11,8 +11,8 @@ import chaiDatetime from 'chai-datetime'
 // import chaiHttp from 'chai-http'
 import chaiSubset from 'chai-subset'
 
-// import sinon from 'sinon'
-// import sinonChai from 'sinon-chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 
 // // debugging
 // import pry from 'pryjs'
@@ -23,12 +23,12 @@ chai.use(chaiDatetime)
 // chai.use(chaiHttp)
 // chai.use(chaiMoment)
 chai.use(chaiSubset)
-// chai.use(sinonChai)
+chai.use(sinonChai)
 
 // exporting globally - to ease the use on specs/tests
 global.chai = chai
 global.expect = chai.expect
-// global.sinon = sinon
+global.sinon = sinon
 
 // checkout http://sinonjs.org/releases/v4.4.2/sandbox/
 

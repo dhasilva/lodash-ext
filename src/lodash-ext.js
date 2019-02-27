@@ -1,8 +1,10 @@
 import _ from 'lodash'
 import camelizeKeys from './camelize-keys'
+import canonic from './canonic'
 import deleteBlanks from './delete-blanks'
 import dig from './dig'
-import { isBlank, isPresent } from './is-blank'
+import { blank, isBlank, present, isPresent } from './blank'
+import search from './search'
 import snakeizeKeys from './snakeize-keys'
 
 
@@ -15,8 +17,14 @@ const lodashExt = _.assign({}, _, {
   dig,
 
   // rails like #blank? and #present?
-  isBlank,
-  isPresent,
+  blank,
+  present,
+  isBlank, // DEPRECATED
+  isPresent, // DEPRECATED
+
+  // string functions
+  canonic,
+  search,
 
   // aliasing commonly used functions
   camelize:   _.camelCase,
@@ -30,8 +38,9 @@ const lodashExt = _.assign({}, _, {
   // extend:   _.extend,
   // merge:    _.merge,
   equals:   _.isEqual,
-  contains: _.isMatch
+  contains: _.isMatch,
 
+  unaccent: _.deburr
 })
 
 

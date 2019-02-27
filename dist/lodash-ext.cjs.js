@@ -3,6 +3,9 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var _ = _interopDefault(require('lodash'));
+require('core-js/modules/es6.regexp.replace');
+require('core-js/modules/es7.array.includes');
+require('core-js/modules/es6.string.includes');
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -63,7 +66,24 @@ function camelizeKeys(value) {
   return _.camelCase(value);
 }
 
-var isBlank = function isBlank(value) {
+/**
+ * Creates a canonical representation of the given string:
+ * - trimmed
+ * - lower case
+ * - "unaccented" (ascii letters only)
+ * - white spaces normalizet to single space
+ *
+ * @param  {String} string the source to produce a canonical value
+ * @return {String}        the canonical representation of the given string
+ */
+
+function canonic(string) {
+  if (string == null) return string;
+  var text = string + '';
+  return _.deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase();
+}
+
+function blank(value) {
   switch (_typeof(value)) {
     case 'string':
       return !value.trim().length;
@@ -75,12 +95,22 @@ var isBlank = function isBlank(value) {
       // Rails like `blank?` - @https://github.com/lodash/lodash/issues/2261#issuecomment-211380044
       return _.isEmpty(value) && !_.isNumber(value) || _.isNaN(value);
   }
-}; // inspired by Rails/ActiveSupport Object#present?
+}
+
+function isBlank() {
+  // console.warn('DEPRECATED: _.isBlank is deprecated. Use _.blank instead.')
+  return blank.apply(void 0, arguments);
+} // inspired by Rails/ActiveSupport Object#present?
 
 
-var isPresent = function isPresent(obj) {
-  return !isBlank(obj);
-};
+function present(obj) {
+  return !blank(obj);
+}
+
+function isPresent() {
+  // console.warn('DEPRECATED: _.isPresent is deprecated. Use _.present instead.')
+  return present.apply(void 0, arguments);
+}
 
 /**
  * Creates a new object, ignoring all keys/properties with "empty" values: null, undefined or empty objects or arrays.
@@ -104,19 +134,19 @@ function deleteBlanks(object) {
       result[key] = deleteBlanks(value);
 
       if (_.isArray(result[key])) {
-        _.remove(result[key], isBlank);
+        _.remove(result[key], blank);
       }
 
-      if (isBlank(result[key])) {
+      if (blank(result[key])) {
         delete result[key];
       }
-    } else if (isBlank(value)) {
+    } else if (blank(value)) {
       delete result[key];
     }
   });
 
   if (_.isArray(result)) {
-    _.remove(result, isBlank);
+    _.remove(result, blank);
   }
 
   return result;
@@ -145,11 +175,22 @@ function dig(object) {
     keys[_key - 1] = arguments[_key];
   }
 
-  // DEPRECATED
-  // use _.get() instead.
+  // console.warn('DEPRECATED: _.dig is deprecated. Use _.get instead.')
   var path = _.join(keys, '.');
 
   return _.get(object, path);
+}
+
+function search(source, target) {
+  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref$canonic = _ref.canonic,
+      canonic$$1 = _ref$canonic === void 0 ? true : _ref$canonic;
+
+  var _source = canonic$$1 ? canonic(source) : source;
+
+  var _target = canonic$$1 ? canonic(target) : target;
+
+  return _.includes(_source, _target);
 }
 
 /**
@@ -204,8 +245,15 @@ var lodashExt = _.assign({}, _, {
   deleteBlanks: deleteBlanks,
   dig: dig,
   // rails like #blank? and #present?
+  blank: blank,
+  present: present,
   isBlank: isBlank,
+  // DEPRECATED
   isPresent: isPresent,
+  // DEPRECATED
+  // string functions
+  canonic: canonic,
+  search: search,
   // aliasing commonly used functions
   camelize: _.camelCase,
   // capitalize: _.capitalize,
@@ -217,7 +265,8 @@ var lodashExt = _.assign({}, _, {
   // extend:   _.extend,
   // merge:    _.merge,
   equals: _.isEqual,
-  contains: _.isMatch
+  contains: _.isMatch,
+  unaccent: _.deburr
 });
 
 module.exports = lodashExt;

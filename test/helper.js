@@ -6,8 +6,8 @@
 
 // we can define "global hooks" here.
 
-// afterEach(async () => {
-//   // restore all sandbox stubs
-//   // @see https://sinonjs.org/releases/v6.3.4/sandbox/
-//   sinon.restore()
-// })
+afterEach(async () => {
+  // restore all sandbox stubs
+  // @see https://sinonjs.org/releases/v6.3.4/sandbox/
+  sinon.restore()
+})
