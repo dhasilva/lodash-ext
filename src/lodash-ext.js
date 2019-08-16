@@ -8,7 +8,8 @@ import search from './search'
 import snakeizeKeys from './snakeize-keys'
 
 
-const lodashExt = _.assign({}, _, {
+const lodashExt = _.runInContext()
+lodashExt.mixin({
 
   // functions to handle object properties/keys transformation
   camelizeKeys,
