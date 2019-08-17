@@ -17247,7 +17247,7 @@
 	  return store[key] || (store[key] = value !== undefined ? value : {});
 	})('versions', []).push({
 	  version: _core.version,
-	  mode: _library ? 'pure' : 'global',
+	  mode: 'global',
 	  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 	});
 	});
@@ -17869,15 +17869,58 @@
 	 */
 
 	function dig(object) {
+	  // _.dig(family, 'parent', 'child') => _.get(family, 'parent.child')
+	  console.warn('[DEPRECATED] _.dig is deprecated. Use _.get instead.');
+
 	  for (var _len = arguments.length, keys = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	    keys[_key - 1] = arguments[_key];
 	  }
 
-	  // console.warn('DEPRECATED: _.dig is deprecated. Use _.get instead.')
 	  var path = lodash.join(keys, '.');
 
 	  return lodash.get(object, path);
 	}
+
+	// 21.2.5.3 get RegExp.prototype.flags()
+	if (_descriptors && /./g.flags != 'g') _objectDp.f(RegExp.prototype, 'flags', {
+	  configurable: true,
+	  get: _flags
+	});
+
+	var TO_STRING = 'toString';
+	var $toString = /./[TO_STRING];
+
+	var define = function (fn) {
+	  _redefine(RegExp.prototype, TO_STRING, fn, true);
+	};
+
+	// 21.2.5.14 RegExp.prototype.toString()
+	if (_fails(function () { return $toString.call({ source: 'a', flags: 'b' }) != '/a/b'; })) {
+	  define(function toString() {
+	    var R = _anObject(this);
+	    return '/'.concat(R.source, '/',
+	      'flags' in R ? R.flags : !_descriptors && R instanceof RegExp ? _flags.call(R) : undefined);
+	  });
+	// FF44- RegExp#toString has a wrong name
+	} else if ($toString.name != TO_STRING) {
+	  define(function toString() {
+	    return $toString.call(this);
+	  });
+	}
+
+	// 22.1.3.31 Array.prototype[@@unscopables]
+	var UNSCOPABLES = _wks('unscopables');
+	var ArrayProto = Array.prototype;
+	if (ArrayProto[UNSCOPABLES] == undefined) _hide(ArrayProto, UNSCOPABLES, {});
+	var _addToUnscopables = function (key) {
+	  ArrayProto[UNSCOPABLES][key] = true;
+	};
+
+	var _iterStep = function (done, value) {
+	  return { value: value, done: !!done };
+	};
+
+	var _iterators = {};
 
 	// fallback for non-array-like ES3 and non-enumerable old V8 strings
 
@@ -17924,13 +17967,491 @@
 	  };
 	};
 
-	// 22.1.3.31 Array.prototype[@@unscopables]
-	var UNSCOPABLES = _wks('unscopables');
-	var ArrayProto = Array.prototype;
-	if (ArrayProto[UNSCOPABLES] == undefined) _hide(ArrayProto, UNSCOPABLES, {});
-	var _addToUnscopables = function (key) {
-	  ArrayProto[UNSCOPABLES][key] = true;
+	var shared = _shared('keys');
+
+	var _sharedKey = function (key) {
+	  return shared[key] || (shared[key] = _uid(key));
 	};
+
+	var arrayIndexOf = _arrayIncludes(false);
+	var IE_PROTO = _sharedKey('IE_PROTO');
+
+	var _objectKeysInternal = function (object, names) {
+	  var O = _toIobject(object);
+	  var i = 0;
+	  var result = [];
+	  var key;
+	  for (key in O) if (key != IE_PROTO) _has(O, key) && result.push(key);
+	  // Don't enum bug & hidden keys
+	  while (names.length > i) if (_has(O, key = names[i++])) {
+	    ~arrayIndexOf(result, key) || result.push(key);
+	  }
+	  return result;
+	};
+
+	// IE 8- don't enum bug keys
+	var _enumBugKeys = (
+	  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+	).split(',');
+
+	// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+
+
+
+	var _objectKeys = Object.keys || function keys(O) {
+	  return _objectKeysInternal(O, _enumBugKeys);
+	};
+
+	var _objectDps = _descriptors ? Object.defineProperties : function defineProperties(O, Properties) {
+	  _anObject(O);
+	  var keys = _objectKeys(Properties);
+	  var length = keys.length;
+	  var i = 0;
+	  var P;
+	  while (length > i) _objectDp.f(O, P = keys[i++], Properties[P]);
+	  return O;
+	};
+
+	var document$1 = _global.document;
+	var _html = document$1 && document$1.documentElement;
+
+	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+
+
+
+	var IE_PROTO$1 = _sharedKey('IE_PROTO');
+	var Empty = function () { /* empty */ };
+	var PROTOTYPE$1 = 'prototype';
+
+	// Create object with fake `null` prototype: use iframe Object with cleared prototype
+	var createDict = function () {
+	  // Thrash, waste and sodomy: IE GC bug
+	  var iframe = _domCreate('iframe');
+	  var i = _enumBugKeys.length;
+	  var lt = '<';
+	  var gt = '>';
+	  var iframeDocument;
+	  iframe.style.display = 'none';
+	  _html.appendChild(iframe);
+	  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+	  // createDict = iframe.contentWindow.Object;
+	  // html.removeChild(iframe);
+	  iframeDocument = iframe.contentWindow.document;
+	  iframeDocument.open();
+	  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+	  iframeDocument.close();
+	  createDict = iframeDocument.F;
+	  while (i--) delete createDict[PROTOTYPE$1][_enumBugKeys[i]];
+	  return createDict();
+	};
+
+	var _objectCreate = Object.create || function create(O, Properties) {
+	  var result;
+	  if (O !== null) {
+	    Empty[PROTOTYPE$1] = _anObject(O);
+	    result = new Empty();
+	    Empty[PROTOTYPE$1] = null;
+	    // add "__proto__" for Object.getPrototypeOf polyfill
+	    result[IE_PROTO$1] = O;
+	  } else result = createDict();
+	  return Properties === undefined ? result : _objectDps(result, Properties);
+	};
+
+	var def = _objectDp.f;
+
+	var TAG$1 = _wks('toStringTag');
+
+	var _setToStringTag = function (it, tag, stat) {
+	  if (it && !_has(it = stat ? it : it.prototype, TAG$1)) def(it, TAG$1, { configurable: true, value: tag });
+	};
+
+	var IteratorPrototype = {};
+
+	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+	_hide(IteratorPrototype, _wks('iterator'), function () { return this; });
+
+	var _iterCreate = function (Constructor, NAME, next) {
+	  Constructor.prototype = _objectCreate(IteratorPrototype, { next: _propertyDesc(1, next) });
+	  _setToStringTag(Constructor, NAME + ' Iterator');
+	};
+
+	// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+
+
+	var IE_PROTO$2 = _sharedKey('IE_PROTO');
+	var ObjectProto = Object.prototype;
+
+	var _objectGpo = Object.getPrototypeOf || function (O) {
+	  O = _toObject(O);
+	  if (_has(O, IE_PROTO$2)) return O[IE_PROTO$2];
+	  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+	    return O.constructor.prototype;
+	  } return O instanceof Object ? ObjectProto : null;
+	};
+
+	var ITERATOR = _wks('iterator');
+	var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
+	var FF_ITERATOR = '@@iterator';
+	var KEYS = 'keys';
+	var VALUES = 'values';
+
+	var returnThis = function () { return this; };
+
+	var _iterDefine = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
+	  _iterCreate(Constructor, NAME, next);
+	  var getMethod = function (kind) {
+	    if (!BUGGY && kind in proto) return proto[kind];
+	    switch (kind) {
+	      case KEYS: return function keys() { return new Constructor(this, kind); };
+	      case VALUES: return function values() { return new Constructor(this, kind); };
+	    } return function entries() { return new Constructor(this, kind); };
+	  };
+	  var TAG = NAME + ' Iterator';
+	  var DEF_VALUES = DEFAULT == VALUES;
+	  var VALUES_BUG = false;
+	  var proto = Base.prototype;
+	  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
+	  var $default = $native || getMethod(DEFAULT);
+	  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
+	  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
+	  var methods, key, IteratorPrototype;
+	  // Fix native
+	  if ($anyNative) {
+	    IteratorPrototype = _objectGpo($anyNative.call(new Base()));
+	    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
+	      // Set @@toStringTag to native iterators
+	      _setToStringTag(IteratorPrototype, TAG, true);
+	      // fix for some old engines
+	      if (!_library && typeof IteratorPrototype[ITERATOR] != 'function') _hide(IteratorPrototype, ITERATOR, returnThis);
+	    }
+	  }
+	  // fix Array#{values, @@iterator}.name in V8 / FF
+	  if (DEF_VALUES && $native && $native.name !== VALUES) {
+	    VALUES_BUG = true;
+	    $default = function values() { return $native.call(this); };
+	  }
+	  // Define iterator
+	  if ((!_library || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
+	    _hide(proto, ITERATOR, $default);
+	  }
+	  // Plug for library
+	  _iterators[NAME] = $default;
+	  _iterators[TAG] = returnThis;
+	  if (DEFAULT) {
+	    methods = {
+	      values: DEF_VALUES ? $default : getMethod(VALUES),
+	      keys: IS_SET ? $default : getMethod(KEYS),
+	      entries: $entries
+	    };
+	    if (FORCED) for (key in methods) {
+	      if (!(key in proto)) _redefine(proto, key, methods[key]);
+	    } else _export(_export.P + _export.F * (BUGGY || VALUES_BUG), NAME, methods);
+	  }
+	  return methods;
+	};
+
+	// 22.1.3.4 Array.prototype.entries()
+	// 22.1.3.13 Array.prototype.keys()
+	// 22.1.3.29 Array.prototype.values()
+	// 22.1.3.30 Array.prototype[@@iterator]()
+	var es6_array_iterator = _iterDefine(Array, 'Array', function (iterated, kind) {
+	  this._t = _toIobject(iterated); // target
+	  this._i = 0;                   // next index
+	  this._k = kind;                // kind
+	// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+	}, function () {
+	  var O = this._t;
+	  var kind = this._k;
+	  var index = this._i++;
+	  if (!O || index >= O.length) {
+	    this._t = undefined;
+	    return _iterStep(1);
+	  }
+	  if (kind == 'keys') return _iterStep(0, index);
+	  if (kind == 'values') return _iterStep(0, O[index]);
+	  return _iterStep(0, [index, O[index]]);
+	}, 'values');
+
+	// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+	_iterators.Arguments = _iterators.Array;
+
+	_addToUnscopables('keys');
+	_addToUnscopables('values');
+	_addToUnscopables('entries');
+
+	var ITERATOR$1 = _wks('iterator');
+	var TO_STRING_TAG = _wks('toStringTag');
+	var ArrayValues = _iterators.Array;
+
+	var DOMIterables = {
+	  CSSRuleList: true, // TODO: Not spec compliant, should be false.
+	  CSSStyleDeclaration: false,
+	  CSSValueList: false,
+	  ClientRectList: false,
+	  DOMRectList: false,
+	  DOMStringList: false,
+	  DOMTokenList: true,
+	  DataTransferItemList: false,
+	  FileList: false,
+	  HTMLAllCollection: false,
+	  HTMLCollection: false,
+	  HTMLFormElement: false,
+	  HTMLSelectElement: false,
+	  MediaList: true, // TODO: Not spec compliant, should be false.
+	  MimeTypeArray: false,
+	  NamedNodeMap: false,
+	  NodeList: true,
+	  PaintRequestList: false,
+	  Plugin: false,
+	  PluginArray: false,
+	  SVGLengthList: false,
+	  SVGNumberList: false,
+	  SVGPathSegList: false,
+	  SVGPointList: false,
+	  SVGStringList: false,
+	  SVGTransformList: false,
+	  SourceBufferList: false,
+	  StyleSheetList: true, // TODO: Not spec compliant, should be false.
+	  TextTrackCueList: false,
+	  TextTrackList: false,
+	  TouchList: false
+	};
+
+	for (var collections = _objectKeys(DOMIterables), i = 0; i < collections.length; i++) {
+	  var NAME = collections[i];
+	  var explicit = DOMIterables[NAME];
+	  var Collection = _global[NAME];
+	  var proto = Collection && Collection.prototype;
+	  var key;
+	  if (proto) {
+	    if (!proto[ITERATOR$1]) _hide(proto, ITERATOR$1, ArrayValues);
+	    if (!proto[TO_STRING_TAG]) _hide(proto, TO_STRING_TAG, NAME);
+	    _iterators[NAME] = ArrayValues;
+	    if (explicit) for (key in es6_array_iterator) if (!proto[key]) _redefine(proto, key, es6_array_iterator[key], true);
+	  }
+	}
+
+	function parse(source, type) {
+	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	  if (lodash.isArray(source)) {
+	    return lodash.map(source, function (v) {
+	      return parse(v, type, options);
+	    });
+	  }
+
+	  if (lodash.isPlainObject(source)) {
+	    return lodash.reduce(lodash.keys(source), function (parsedObj, key) {
+	      parsedObj[key] = parse(source[key], type, options);
+	      return parsedObj;
+	    }, {});
+	  } // scalar
+
+
+	  return parse.as(type, source, options);
+	}
+
+	parse.as = function as(type, value) {
+	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	  var parseFn = $customParsers[type] || $parsers[type];
+	  if (!parseFn) throw new Error("[@caiena/lodash-ext] _.parse: don't know how to parse as \"".concat(type, "\""));
+	  return parseFn(value, options);
+	};
+
+	parse.use = function use(parsers) {
+	  lodash.each(parsers, function (parseFn, type) {
+	    if (typeof parseFn !== 'function') {
+	      throw new Error("[@caiena/lodash-ext] _.parse: parser for type \"".concat(type, "\" is not a function"));
+	    }
+
+	    if (lodash.has($customParsers, type)) {
+	      console.warn("[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type \"".concat(type, "\""));
+	    } else if (lodash.has($parsers, type)) {
+	      console.warn("[@caiena/lodash-ext] _.parse: overriding default parser for type \"".concat(type, "\""));
+	    } // add to $customParsers
+
+
+	    $customParsers[type] = parseFn;
+	  });
+	};
+
+	parse.remove = function remove(customParserTypes) {
+	  var types = lodash.castArray(customParserTypes);
+
+	  var unknownTypes = lodash.difference(types, lodash.keys($customParsers)); // _.difference(subset, superset)
+
+
+	  if (!blank(unknownTypes)) {
+	    throw new Error("[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) \"".concat(unknownTypes, "\""));
+	  }
+
+	  lodash.each(types, function (type) {
+	    delete $customParsers[type];
+	  });
+	};
+
+	var $customParsers = {};
+	var $parsers = {
+	  /**
+	   * Interpreta o valor como Boolean. Caso não consiga, retorna
+	   * options.defaultValue - que por padrão é `undefined`.
+	   *
+	   * @param  {[type]} value   [description]
+	   * @param  {Object} options [description]
+	   * @return {[type]}         [description]
+	   */
+	  boolean: function boolean(value) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var defaultValue = options.defaultValue;
+	    var boolean = defaultValue;
+
+	    if (value === 'false' || value === false) {
+	      boolean = false;
+	    } else if (value === 'true' || value === true) {
+	      boolean = true;
+	    }
+
+	    return boolean;
+	  },
+
+	  /**
+	   * Interpreta o valor como Float. Caso não consiga, retorna
+	   * options.defaultValue - que por padrão é `undefined`.
+	   *
+	   * @param  {[type]} value   [description]
+	   * @param  {Object} options [description]
+	   * @return {[type]}         [description]
+	   */
+	  float: function float(value) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+	    // e.g. parseFloat("+12.9-some_TEXT.in@here/AlR1Gh7?!") == 12.9
+	    // https://stackoverflow.com/a/1830547
+
+	    if (typeof value === 'string' && (/^\s*$/.test(value) || isNaN(value))) {
+	      return defaultValue;
+	    }
+
+	    var float = parseFloat(value);
+	    return isNaN(float) ? defaultValue : float;
+	  },
+
+	  /**
+	   * Interpreta o valor como Integer. Caso não consiga, retorna
+	   * options.defaultValue - que por padrão é `undefined`.
+	   *
+	   * @param  {[type]} value   [description]
+	   * @param  {Object} options [description]
+	   * @return {[type]}         [description]
+	   */
+	  integer: function integer(value) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+	    // e.g. parseInt("+12.9-some_TEXT.in@here/AlR1Gh7?!", 10) == 12
+	    // https://stackoverflow.com/a/1830547
+
+	    if (typeof value === 'string' && (/^\s*$/.test(value) || isNaN(value))) {
+	      return defaultValue;
+	    }
+
+	    var int = parseInt(value, 10);
+	    return isNaN(int) ? defaultValue : int;
+	  },
+	  json: function json(value) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var defaultValue = options.defaultValue;
+	    var object = defaultValue;
+
+	    try {
+	      object = JSON.parse(value);
+	    } catch (e) {}
+
+	    return object;
+	  },
+
+	  /**
+	   * Interpreta o valor como String. Caso seja String vazia (`''`), retorna
+	   * options.defaultValue - que por padrão é `undefined`.
+	   *
+	   * @param  {[type]} value   [description]
+	   * @param  {Object} options [description]
+	   * @return {[type]}         [description]
+	   */
+	  string: function string(value) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var defaultValue = options.defaultValue;
+	    if (value == null) return ''; // null or undefined
+
+	    if (value === true) return 'true';
+	    if (value === false) return 'false';
+	    if (lodash.isArray(value)) return value.toString();
+	    if (lodash.isPlainObject(value)) return JSON.stringify(value);
+	    return value && value.toString() || defaultValue;
+	  }
+	};
+
+	/**
+	 * Picks and parses each picked value as defined by a config object, using _.parse().
+	 *
+	 * usage:
+	 * ```js
+	 * // express route, picking and parsing a post/patch request
+	 * let params = _.pickParse(req.body, {
+	 *   'id':              'integer',
+	 *   'user.name':       'string',
+	 *   'user.admin_flag': 'boolean'
+	 * })
+	 *````
+	 *
+	 * ```javascript
+	 * // browser, parsing url query string
+	 * let params = _.pickParse($route.query, {
+	 *     // filters
+	 *     address:   'string',
+	 *     available: 'boolean',
+	 *     code:      'integer',
+	 *     phone:     'string',
+	 *     since:     'string',
+	 *     max:       'float',
+	 *     min:       'float',
+	 *
+	 *     // text search
+	 *     q: 'string',
+	 *
+	 *     // paging and sorting
+	 *     page:  'integer',
+	 *     sort:  'string',
+	 *     order: 'string'
+	 *   })
+	 * )
+	 * ````
+	 *
+	 * @param  {Object} object  source object
+	 * @param  {Object} config  config object, mapping attributes to be picked to their parsing type
+	 * @param  {Object} options not used
+	 * @return {Object}         Objeto resultado da interpretação definida
+	 */
+
+	function pickParse(object) {
+	  var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	  var keys = lodash.keys(config);
+
+	  var picked = lodash.pick(object, keys);
+
+	  return lodash.reduce(keys, function (pickedAndParsed, key) {
+	    var type = lodash.get(config, key);
+
+	    var value = lodash.get(picked, key);
+
+	    var parsed = parse(value, type, options);
+
+	    lodash.set(pickedAndParsed, key, parsed);
+
+	    return pickedAndParsed;
+	  }, {});
+	}
 
 	// https://github.com/tc39/Array.prototype.includes
 
@@ -18041,7 +18562,9 @@
 	  return lodash.snakeCase(value);
 	}
 
-	var lodashExt = lodash.assign({}, lodash, {
+	var lodashExt = lodash.runInContext();
+
+	lodashExt.mixin({
 	  // functions to handle object properties/keys transformation
 	  camelizeKeys: camelizeKeys,
 	  snakeizeKeys: snakeizeKeys,
@@ -18057,6 +18580,9 @@
 	  // string functions
 	  canonic: canonic,
 	  search: search,
+	  // parsing functions
+	  parse: parse,
+	  pickParse: pickParse,
 	  // aliasing commonly used functions
 	  camelize: lodash.camelCase,
 	  // capitalize: _.capitalize,

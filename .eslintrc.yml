@@ -1,0 +1,75 @@
+# checkout a sample @ https://github.com/standard/eslint-config-standard/blob/master/eslintrc.json
+---
+
+# do not lookup to possible user $HOME/.eslintrc.*
+root: true
+
+env:
+  # browser: true
+  node: true
+  es6: true
+
+# The extends property value can omit the eslint-config- prefix of the package name.
+# e.g. use "standard" instead of "eslint-config-standard"
+extends:
+  # - standard
+  - eslint:recommended
+  # using a plugin sample:
+  # - plugin:react/recommended
+
+
+# The plugins property value can omit the eslint-plugin- prefix of the package name.
+# e.g. use "react" instead of "eslint-plugin-react"
+# ! SAMPLE
+# plugins:
+#   - a-plugin
+
+# ! SAMPLE
+overrides:
+  - files:
+    - '*.spec.js'
+    rules:
+      no-unused-expressions: "off"
+#   ! SAMPLE for processing markdown
+#   - files:
+#       - "*.md"
+#     processor: a-plugin/markdown
+#
+#   - files:
+#       - "**/*.md/*.js"
+#     rules:
+#       strict: 'off'
+#
+#   - files:
+#       - "bin/*.js"
+#       - "lib/*.js"
+#     excludedFiles:
+#       - "*.spec.js"
+#     rules:
+#       quotes: ["error", "single"]
+
+
+# ! SAMPLE
+# parser: esprima
+
+# ! SAMPLE
+parserOptions:
+  ecmaVersion: 6
+  sourceType: module
+#   ecmaFeatures:
+#       jsx: true
+
+globals:
+  _: readonly
+  # $cache: writable
+  # Promise: 'off'
+
+rules:
+  comma-dangle: off
+  no-unused-vars:
+    - error
+    - args: none
+  prefer-destructuring: off
+  semi:
+    - error
+    - never

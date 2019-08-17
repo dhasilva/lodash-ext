@@ -4,6 +4,8 @@ import canonic from './canonic'
 import deleteBlanks from './delete-blanks'
 import dig from './dig'
 import { blank, isBlank, present, isPresent } from './blank'
+import parse from './parse'
+import pickParse from './pick-parse'
 import search from './search'
 import snakeizeKeys from './snakeize-keys'
 
@@ -26,6 +28,10 @@ lodashExt.mixin({
   // string functions
   canonic,
   search,
+
+  // parsing functions
+  parse,
+  pickParse,
 
   // aliasing commonly used functions
   camelize:   _.camelCase,

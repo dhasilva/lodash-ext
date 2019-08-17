@@ -1,0 +1,31 @@
+# checkout a sample @ https://github.com/standard/eslint-config-standard/blob/master/eslintrc.json
+---
+
+env:
+  # browser: true
+  # node: true
+  # es6: true
+  mocha: true
+
+globals:
+  # app
+  # app: true
+  # databaseCleaner: true
+  # models: true
+  # $tests: true
+
+  # mocha
+  # afterEach: true
+  # beforeEach: true
+
+  # chai
+  chai: true
+  describe: true
+  expect: true
+  it: true
+
+  # sinon
+  sinon: true
+
+rules:
+  no-unused-expressions: 0  # see https://github.com/eslint/eslint/issues/2102

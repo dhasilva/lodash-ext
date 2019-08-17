@@ -4,6 +4,9 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var _ = _interopDefault(require('lodash'));
 require('core-js/modules/es6.regexp.replace');
+require('core-js/modules/es6.regexp.to-string');
+require('core-js/modules/web.dom.iterable');
+require('core-js/modules/es6.array.iterator');
 require('core-js/modules/es7.array.includes');
 require('core-js/modules/es6.string.includes');
 
@@ -171,14 +174,238 @@ function deleteBlanks(object) {
  */
 
 function dig(object) {
+  // _.dig(family, 'parent', 'child') => _.get(family, 'parent.child')
+  console.warn('[DEPRECATED] _.dig is deprecated. Use _.get instead.');
+
   for (var _len = arguments.length, keys = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     keys[_key - 1] = arguments[_key];
   }
 
-  // console.warn('DEPRECATED: _.dig is deprecated. Use _.get instead.')
   var path = _.join(keys, '.');
 
   return _.get(object, path);
+}
+
+function parse(source, type) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if (_.isArray(source)) {
+    return _.map(source, function (v) {
+      return parse(v, type, options);
+    });
+  }
+
+  if (_.isPlainObject(source)) {
+    return _.reduce(_.keys(source), function (parsedObj, key) {
+      parsedObj[key] = parse(source[key], type, options);
+      return parsedObj;
+    }, {});
+  } // scalar
+
+
+  return parse.as(type, source, options);
+}
+
+parse.as = function as(type, value) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var parseFn = $customParsers[type] || $parsers[type];
+  if (!parseFn) throw new Error("[@caiena/lodash-ext] _.parse: don't know how to parse as \"".concat(type, "\""));
+  return parseFn(value, options);
+};
+
+parse.use = function use(parsers) {
+  _.each(parsers, function (parseFn, type) {
+    if (typeof parseFn !== 'function') {
+      throw new Error("[@caiena/lodash-ext] _.parse: parser for type \"".concat(type, "\" is not a function"));
+    }
+
+    if (_.has($customParsers, type)) {
+      console.warn("[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type \"".concat(type, "\""));
+    } else if (_.has($parsers, type)) {
+      console.warn("[@caiena/lodash-ext] _.parse: overriding default parser for type \"".concat(type, "\""));
+    } // add to $customParsers
+
+
+    $customParsers[type] = parseFn;
+  });
+};
+
+parse.remove = function remove(customParserTypes) {
+  var types = _.castArray(customParserTypes);
+
+  var unknownTypes = _.difference(types, _.keys($customParsers)); // _.difference(subset, superset)
+
+
+  if (!blank(unknownTypes)) {
+    throw new Error("[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) \"".concat(unknownTypes, "\""));
+  }
+
+  _.each(types, function (type) {
+    delete $customParsers[type];
+  });
+};
+
+var $customParsers = {};
+var $parsers = {
+  /**
+   * Interpreta o valor como Boolean. Caso não consiga, retorna
+   * options.defaultValue - que por padrão é `undefined`.
+   *
+   * @param  {[type]} value   [description]
+   * @param  {Object} options [description]
+   * @return {[type]}         [description]
+   */
+  boolean: function boolean(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var defaultValue = options.defaultValue;
+    var boolean = defaultValue;
+
+    if (value === 'false' || value === false) {
+      boolean = false;
+    } else if (value === 'true' || value === true) {
+      boolean = true;
+    }
+
+    return boolean;
+  },
+
+  /**
+   * Interpreta o valor como Float. Caso não consiga, retorna
+   * options.defaultValue - que por padrão é `undefined`.
+   *
+   * @param  {[type]} value   [description]
+   * @param  {Object} options [description]
+   * @return {[type]}         [description]
+   */
+  float: function float(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+    // e.g. parseFloat("+12.9-some_TEXT.in@here/AlR1Gh7?!") == 12.9
+    // https://stackoverflow.com/a/1830547
+
+    if (typeof value === 'string' && (/^\s*$/.test(value) || isNaN(value))) {
+      return defaultValue;
+    }
+
+    var float = parseFloat(value);
+    return isNaN(float) ? defaultValue : float;
+  },
+
+  /**
+   * Interpreta o valor como Integer. Caso não consiga, retorna
+   * options.defaultValue - que por padrão é `undefined`.
+   *
+   * @param  {[type]} value   [description]
+   * @param  {Object} options [description]
+   * @return {[type]}         [description]
+   */
+  integer: function integer(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+    // e.g. parseInt("+12.9-some_TEXT.in@here/AlR1Gh7?!", 10) == 12
+    // https://stackoverflow.com/a/1830547
+
+    if (typeof value === 'string' && (/^\s*$/.test(value) || isNaN(value))) {
+      return defaultValue;
+    }
+
+    var int = parseInt(value, 10);
+    return isNaN(int) ? defaultValue : int;
+  },
+  json: function json(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var defaultValue = options.defaultValue;
+    var object = defaultValue;
+
+    try {
+      object = JSON.parse(value);
+    } catch (e) {}
+
+    return object;
+  },
+
+  /**
+   * Interpreta o valor como String. Caso seja String vazia (`''`), retorna
+   * options.defaultValue - que por padrão é `undefined`.
+   *
+   * @param  {[type]} value   [description]
+   * @param  {Object} options [description]
+   * @return {[type]}         [description]
+   */
+  string: function string(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var defaultValue = options.defaultValue;
+    if (value == null) return ''; // null or undefined
+
+    if (value === true) return 'true';
+    if (value === false) return 'false';
+    if (_.isArray(value)) return value.toString();
+    if (_.isPlainObject(value)) return JSON.stringify(value);
+    return value && value.toString() || defaultValue;
+  }
+};
+
+/**
+ * Picks and parses each picked value as defined by a config object, using _.parse().
+ *
+ * usage:
+ * ```js
+ * // express route, picking and parsing a post/patch request
+ * let params = _.pickParse(req.body, {
+ *   'id':              'integer',
+ *   'user.name':       'string',
+ *   'user.admin_flag': 'boolean'
+ * })
+ *````
+ *
+ * ```javascript
+ * // browser, parsing url query string
+ * let params = _.pickParse($route.query, {
+ *     // filters
+ *     address:   'string',
+ *     available: 'boolean',
+ *     code:      'integer',
+ *     phone:     'string',
+ *     since:     'string',
+ *     max:       'float',
+ *     min:       'float',
+ *
+ *     // text search
+ *     q: 'string',
+ *
+ *     // paging and sorting
+ *     page:  'integer',
+ *     sort:  'string',
+ *     order: 'string'
+ *   })
+ * )
+ * ````
+ *
+ * @param  {Object} object  source object
+ * @param  {Object} config  config object, mapping attributes to be picked to their parsing type
+ * @param  {Object} options not used
+ * @return {Object}         Objeto resultado da interpretação definida
+ */
+
+function pickParse(object) {
+  var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var keys = _.keys(config);
+
+  var picked = _.pick(object, keys);
+
+  return _.reduce(keys, function (pickedAndParsed, key) {
+    var type = _.get(config, key);
+
+    var value = _.get(picked, key);
+
+    var parsed = parse(value, type, options);
+
+    _.set(pickedAndParsed, key, parsed);
+
+    return pickedAndParsed;
+  }, {});
 }
 
 function search(source, target) {
@@ -238,7 +465,9 @@ function snakeizeKeys(value) {
   return _.snakeCase(value);
 }
 
-var lodashExt = _.assign({}, _, {
+var lodashExt = _.runInContext();
+
+lodashExt.mixin({
   // functions to handle object properties/keys transformation
   camelizeKeys: camelizeKeys,
   snakeizeKeys: snakeizeKeys,
@@ -254,6 +483,9 @@ var lodashExt = _.assign({}, _, {
   // string functions
   canonic: canonic,
   search: search,
+  // parsing functions
+  parse: parse,
+  pickParse: pickParse,
   // aliasing commonly used functions
   camelize: _.camelCase,
   // capitalize: _.capitalize,
