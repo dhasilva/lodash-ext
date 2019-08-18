@@ -233,8 +233,7 @@ parse.use = function use(parsers) {
 parse.remove = function remove(customParserTypes) {
   var types = _.castArray(customParserTypes);
 
-  var unknownTypes = _.difference(types, _.keys($customParsers)); // _.difference(subset, superset)
-
+  var unknownTypes = _.difference(types, _.keys($customParsers));
 
   if (!blank(unknownTypes)) {
     throw new Error("[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) \"".concat(unknownTypes, "\""));
