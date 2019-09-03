@@ -20,7 +20,7 @@ function isBlank(...args) {
 
 // inspired by Rails/ActiveSupport Object#present?
 function present(obj) {
-  return !blank(obj);
+  return !blank(obj)
 }
 
 function isPresent(...args) {
