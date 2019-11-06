@@ -6,6 +6,7 @@
   "module": "dist/lodash-ext.esm.js",
   "browser": "dist/lodash-ext.umd.js",
   "dependencies": {
+    "core-js": "2.6.10",
     "lodash": "^4.17.13"
   },
   "devDependencies": {
