@@ -35,10 +35,9 @@ export default [
       { file: pkg.module, format: 'es' }
     ],
     plugins: [
-      resolve(),
       babel({
         exclude: ['node_modules/**']
-      })
+      }),
     ]
   }
 ]

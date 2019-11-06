@@ -1,6 +1,6 @@
 {
   "name": "@caiena/lodash-ext",
-  "version": "0.6.3",
+  "version": "0.6.2",
   "description": "Lodash extended",
   "main": "dist/lodash-ext.cjs.js",
   "module": "dist/lodash-ext.esm.js",
