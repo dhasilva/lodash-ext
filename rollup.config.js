@@ -20,7 +20,7 @@ export default [
       })
     ]
   },
-
+  
   // CommonJS (for Node) and ES module (for bundlers) build.
   // (We could have three entries in the configuration array
   // instead of two, but it's quicker to generate multiple
@@ -35,6 +35,7 @@ export default [
       { file: pkg.module, format: 'es' }
     ],
     plugins: [
+      resolve(),
       babel({
         exclude: ['node_modules/**']
       })
