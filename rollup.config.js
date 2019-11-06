@@ -13,11 +13,11 @@ export default [
       format: 'umd'
     },
     plugins: [
-      resolve(), // so Rollup can find `lodash`
-      commonjs(), // so Rollup can convert `lodash` to an ES module
       babel({
         exclude: ['node_modules/**']
-      })
+      }),
+      resolve(),  // so Rollup can find and bundle `lodash`
+      commonjs(), // so Rollup can convert `lodash` CommonJS to ES module syntax
     ]
   },
 
@@ -38,6 +38,8 @@ export default [
       babel({
         exclude: ['node_modules/**']
       }),
+      resolve(),  // so Rollup can find `core-js`
+      commonjs(), // so Rollup can convert `core-js` to an ES module
     ]
   }
 ]
