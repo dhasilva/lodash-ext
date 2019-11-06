@@ -1,11 +1,12 @@
 {
   "name": "@caiena/lodash-ext",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Lodash extended",
   "main": "dist/lodash-ext.cjs.js",
   "module": "dist/lodash-ext.esm.js",
   "browser": "dist/lodash-ext.umd.js",
   "dependencies": {
+    "core-js": "^2.6.10",
     "lodash": "^4.17.13"
   },
   "devDependencies": {
