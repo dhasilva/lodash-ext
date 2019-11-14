@@ -6,26 +6,30 @@
   "module": "dist/lodash-ext.esm.js",
   "browser": "dist/lodash-ext.umd.js",
   "dependencies": {
-    "lodash": "^4.17.13"
+    "core-js": "3.4.1",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/polyfill": "^7.2.5",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/register": "^7.0.0",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/register": "^7.7.0",
+    "babel-plugin-import-glob": "^2.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-change": "^2.1.2",
     "chai-datetime": "^1.5.0",
     "chai-subset": "^1.6.0",
-    "mocha": "^5.2.0",
+    "glob": "^7.1.6",
+    "mocha": "^6.2.2",
     "moment": "^2.24.0",
-    "node-watch": "^0.6.0",
-    "rollup": "^1.0.0",
-    "rollup-plugin-babel": "^4.2.0",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "sinon": "^7.2.4",
+    "node-watch": "^0.6.3",
+    "rollup": "^1.27.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-local-resolve": "^1.0.7",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0"
   },
   "scripts": {
@@ -36,9 +40,7 @@
     "test": "mocha --exit",
     "pretest:all": "yarn run build",
     "test:all": "mocha --exit \"test/**/*.spec.js\"",
-    "test:watch": "node ./bin/mocha-watch",
-    "//test:watch": "mocha --watch \"test/**/*.spec.js\"",
-    "//test:watch2": "nodemon --config nodemon.test.json --exec 'mocha \"test/**/*.spec.js\" || true'"
+    "test:watch": "node ./bin/mocha-watch"
   },
   "files": [
     "dist"
