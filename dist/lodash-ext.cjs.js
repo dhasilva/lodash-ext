@@ -383,11 +383,11 @@ function pickParse(object, config = {}, options = {}) {
 }
 
 function search(source, target, {
-  canonic: canonic$$1 = true
+  canonic: canonic$1 = true
 } = {}) {
-  let _source = canonic$$1 ? canonic(source) : source;
+  let _source = canonic$1 ? canonic(source) : source;
 
-  let _target = canonic$$1 ? canonic(target) : target;
+  let _target = canonic$1 ? canonic(target) : target;
 
   return _.includes(_source, _target);
 }
