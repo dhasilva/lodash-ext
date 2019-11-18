@@ -3,26 +3,6 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var _ = _interopDefault(require('lodash'));
-require('core-js/modules/es6.regexp.replace');
-require('core-js/modules/es6.regexp.to-string');
-require('core-js/modules/web.dom.iterable');
-require('core-js/modules/es6.array.iterator');
-require('core-js/modules/es7.array.includes');
-require('core-js/modules/es6.string.includes');
-
-function _typeof(obj) {
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
-}
 
 /**
  * Creates a new object, transforming all of its properties to camelCase format.
@@ -40,9 +20,9 @@ function _typeof(obj) {
  */
 
 function deepCamelizeKeys(object) {
-  var camelized = _.cloneDeep(object);
+  let camelized = _.cloneDeep(object);
 
-  _.forOwn(object, function (value, key) {
+  _.forOwn(object, (value, key) => {
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
     if (_.isPlainObject(value) || _.isArray(value)) {
@@ -50,7 +30,7 @@ function deepCamelizeKeys(object) {
       camelized[key] = value;
     }
 
-    var camelizedKey = _.camelCase(key);
+    const camelizedKey = _.camelCase(key);
 
     if (camelizedKey !== key) {
       camelized[camelizedKey] = value;
@@ -62,7 +42,7 @@ function deepCamelizeKeys(object) {
 }
 
 function camelizeKeys(value) {
-  if (_typeof(value) === 'object') {
+  if (typeof value === 'object') {
     return deepCamelizeKeys(value);
   }
 
@@ -82,12 +62,12 @@ function camelizeKeys(value) {
 
 function canonic(string) {
   if (string == null) return string;
-  var text = string + '';
+  let text = string + '';
   return _.deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase();
 }
 
 function blank(value) {
-  switch (_typeof(value)) {
+  switch (typeof value) {
     case 'string':
       return !value.trim().length;
 
@@ -100,9 +80,9 @@ function blank(value) {
   }
 }
 
-function isBlank() {
+function isBlank(...args) {
   // console.warn('DEPRECATED: _.isBlank is deprecated. Use _.blank instead.')
-  return blank.apply(void 0, arguments);
+  return blank(...args);
 } // inspired by Rails/ActiveSupport Object#present?
 
 
@@ -110,9 +90,9 @@ function present(obj) {
   return !blank(obj);
 }
 
-function isPresent() {
+function isPresent(...args) {
   // console.warn('DEPRECATED: _.isPresent is deprecated. Use _.present instead.')
-  return present.apply(void 0, arguments);
+  return present(...args);
 }
 
 /**
@@ -130,9 +110,9 @@ function isPresent() {
  */
 
 function deleteBlanks(object) {
-  var result = _.cloneDeep(object);
+  let result = _.cloneDeep(object);
 
-  _.forOwn(result, function (value, key) {
+  _.forOwn(result, (value, key) => {
     if (_.isPlainObject(value) || _.isArray(value)) {
       result[key] = deleteBlanks(value);
 
@@ -173,30 +153,22 @@ function deleteBlanks(object) {
  * @return {Object}           value of the nested properti, or `undefined` if it does not exist
  */
 
-function dig(object) {
+function dig(object, ...keys) {
   // _.dig(family, 'parent', 'child') => _.get(family, 'parent.child')
   console.warn('[DEPRECATED] _.dig is deprecated. Use _.get instead.');
 
-  for (var _len = arguments.length, keys = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    keys[_key - 1] = arguments[_key];
-  }
-
-  var path = _.join(keys, '.');
+  let path = _.join(keys, '.');
 
   return _.get(object, path);
 }
 
-function parse(source, type) {
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
+function parse(source, type, options = {}) {
   if (_.isArray(source)) {
-    return _.map(source, function (v) {
-      return parse(v, type, options);
-    });
+    return _.map(source, v => parse(v, type, options));
   }
 
   if (_.isPlainObject(source)) {
-    return _.reduce(_.keys(source), function (parsedObj, key) {
+    return _.reduce(_.keys(source), (parsedObj, key) => {
       parsedObj[key] = parse(source[key], type, options);
       return parsedObj;
     }, {});
@@ -206,23 +178,22 @@ function parse(source, type) {
   return parse.as(type, source, options);
 }
 
-parse.as = function as(type, value) {
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var parseFn = $customParsers[type] || $parsers[type];
-  if (!parseFn) throw new Error("[@caiena/lodash-ext] _.parse: don't know how to parse as \"".concat(type, "\""));
+parse.as = function as(type, value, options = {}) {
+  let parseFn = $customParsers[type] || $parsers[type];
+  if (!parseFn) throw new Error(`[@caiena/lodash-ext] _.parse: don't know how to parse as "${type}"`);
   return parseFn(value, options);
 };
 
 parse.use = function use(parsers) {
-  _.each(parsers, function (parseFn, type) {
+  _.each(parsers, (parseFn, type) => {
     if (typeof parseFn !== 'function') {
-      throw new Error("[@caiena/lodash-ext] _.parse: parser for type \"".concat(type, "\" is not a function"));
+      throw new Error(`[@caiena/lodash-ext] _.parse: parser for type "${type}" is not a function`);
     }
 
     if (_.has($customParsers, type)) {
-      console.warn("[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type \"".concat(type, "\""));
+      console.warn(`[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type "${type}"`);
     } else if (_.has($parsers, type)) {
-      console.warn("[@caiena/lodash-ext] _.parse: overriding default parser for type \"".concat(type, "\""));
+      console.warn(`[@caiena/lodash-ext] _.parse: overriding default parser for type "${type}"`);
     } // add to $customParsers
 
 
@@ -231,21 +202,21 @@ parse.use = function use(parsers) {
 };
 
 parse.remove = function remove(customParserTypes) {
-  var types = _.castArray(customParserTypes);
+  let types = _.castArray(customParserTypes);
 
-  var unknownTypes = _.difference(types, _.keys($customParsers));
+  let unknownTypes = _.difference(types, _.keys($customParsers));
 
   if (!blank(unknownTypes)) {
-    throw new Error("[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) \"".concat(unknownTypes, "\""));
+    throw new Error(`[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) "${unknownTypes}"`);
   }
 
-  _.each(types, function (type) {
+  _.each(types, type => {
     delete $customParsers[type];
   });
 };
 
-var $customParsers = {};
-var $parsers = {
+const $customParsers = {};
+const $parsers = {
   /**
    * Interpreta o valor como Boolean. Caso não consiga, retorna
    * options.defaultValue - que por padrão é `undefined`.
@@ -254,10 +225,11 @@ var $parsers = {
    * @param  {Object} options [description]
    * @return {[type]}         [description]
    */
-  boolean: function boolean(value) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var defaultValue = options.defaultValue;
-    var boolean = defaultValue;
+  boolean(value, options = {}) {
+    const {
+      defaultValue
+    } = options;
+    let boolean = defaultValue;
 
     if (value === 'false' || value === false) {
       boolean = false;
@@ -276,9 +248,10 @@ var $parsers = {
    * @param  {Object} options [description]
    * @return {[type]}         [description]
    */
-  float: function float(value) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+  float(value, options = {}) {
+    const {
+      defaultValue
+    } = options; // ignoring malformed strings starting with numbers
     // e.g. parseFloat("+12.9-some_TEXT.in@here/AlR1Gh7?!") == 12.9
     // https://stackoverflow.com/a/1830547
 
@@ -286,7 +259,7 @@ var $parsers = {
       return defaultValue;
     }
 
-    var float = parseFloat(value);
+    const float = parseFloat(value);
     return isNaN(float) ? defaultValue : float;
   },
 
@@ -298,9 +271,10 @@ var $parsers = {
    * @param  {Object} options [description]
    * @return {[type]}         [description]
    */
-  integer: function integer(value) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var defaultValue = options.defaultValue; // ignoring malformed strings starting with numbers
+  integer(value, options = {}) {
+    const {
+      defaultValue
+    } = options; // ignoring malformed strings starting with numbers
     // e.g. parseInt("+12.9-some_TEXT.in@here/AlR1Gh7?!", 10) == 12
     // https://stackoverflow.com/a/1830547
 
@@ -308,13 +282,15 @@ var $parsers = {
       return defaultValue;
     }
 
-    var int = parseInt(value, 10);
+    const int = parseInt(value, 10);
     return isNaN(int) ? defaultValue : int;
   },
-  json: function json(value) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var defaultValue = options.defaultValue;
-    var object = defaultValue;
+
+  json(value, options = {}) {
+    const {
+      defaultValue
+    } = options;
+    let object = defaultValue;
 
     try {
       object = JSON.parse(value);
@@ -331,9 +307,10 @@ var $parsers = {
    * @param  {Object} options [description]
    * @return {[type]}         [description]
    */
-  string: function string(value) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var defaultValue = options.defaultValue;
+  string(value, options = {}) {
+    const {
+      defaultValue
+    } = options;
     if (value == null) return ''; // null or undefined
 
     if (value === true) return 'true';
@@ -342,6 +319,7 @@ var $parsers = {
     if (_.isPlainObject(value)) return JSON.stringify(value);
     return value && value.toString() || defaultValue;
   }
+
 };
 
 /**
@@ -386,20 +364,17 @@ var $parsers = {
  * @return {Object}         Objeto resultado da interpretação definida
  */
 
-function pickParse(object) {
-  var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+function pickParse(object, config = {}, options = {}) {
+  let keys = _.keys(config);
 
-  var keys = _.keys(config);
+  let picked = _.pick(object, keys);
 
-  var picked = _.pick(object, keys);
+  return _.reduce(keys, (pickedAndParsed, key) => {
+    let type = _.get(config, key);
 
-  return _.reduce(keys, function (pickedAndParsed, key) {
-    var type = _.get(config, key);
+    let value = _.get(picked, key);
 
-    var value = _.get(picked, key);
-
-    var parsed = parse(value, type, options);
+    let parsed = parse(value, type, options);
 
     _.set(pickedAndParsed, key, parsed);
 
@@ -407,14 +382,12 @@ function pickParse(object) {
   }, {});
 }
 
-function search(source, target) {
-  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref$canonic = _ref.canonic,
-      canonic$$1 = _ref$canonic === void 0 ? true : _ref$canonic;
+function search(source, target, {
+  canonic: canonic$1 = true
+} = {}) {
+  let _source = canonic$1 ? canonic(source) : source;
 
-  var _source = canonic$$1 ? canonic(source) : source;
-
-  var _target = canonic$$1 ? canonic(target) : target;
+  let _target = canonic$1 ? canonic(target) : target;
 
   return _.includes(_source, _target);
 }
@@ -435,9 +408,9 @@ function search(source, target) {
  */
 
 function deepSnakeizeKeys(object) {
-  var snakeized = _.cloneDeep(object);
+  let snakeized = _.cloneDeep(object);
 
-  _.forOwn(object, function (value, key) {
+  _.forOwn(object, (value, key) => {
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
     if (_.isPlainObject(value) || _.isArray(value)) {
@@ -445,7 +418,7 @@ function deepSnakeizeKeys(object) {
       snakeized[key] = value;
     }
 
-    var snakeizedKey = _.snakeCase(key);
+    const snakeizedKey = _.snakeCase(key);
 
     if (snakeizedKey !== key) {
       snakeized[snakeizedKey] = value;
@@ -457,34 +430,34 @@ function deepSnakeizeKeys(object) {
 }
 
 function snakeizeKeys(value) {
-  if (_typeof(value) === 'object') {
+  if (typeof value === 'object') {
     return deepSnakeizeKeys(value);
   }
 
   return _.snakeCase(value);
 }
 
-var lodashExt = _.runInContext();
+const lodashExt = _.runInContext();
 
 lodashExt.mixin({
   // functions to handle object properties/keys transformation
-  camelizeKeys: camelizeKeys,
-  snakeizeKeys: snakeizeKeys,
-  deleteBlanks: deleteBlanks,
-  dig: dig,
+  camelizeKeys,
+  snakeizeKeys,
+  deleteBlanks,
+  dig,
   // rails like #blank? and #present?
-  blank: blank,
-  present: present,
-  isBlank: isBlank,
+  blank,
+  present,
+  isBlank,
   // DEPRECATED
-  isPresent: isPresent,
+  isPresent,
   // DEPRECATED
   // string functions
-  canonic: canonic,
-  search: search,
+  canonic,
+  search,
   // parsing functions
-  parse: parse,
-  pickParse: pickParse,
+  parse,
+  pickParse,
   // aliasing commonly used functions
   camelize: _.camelCase,
   // capitalize: _.capitalize,
