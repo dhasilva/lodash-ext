@@ -1,5 +1,3 @@
-'use strict'
-
 process.env.NODE_ENV = 'test'
 
 // Setting up the context with test libraries

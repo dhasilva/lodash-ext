@@ -1,10 +1,14 @@
 import _ from 'lodash';
-import 'core-js/modules/es6.regexp.replace';
-import 'core-js/modules/es6.regexp.to-string';
-import 'core-js/modules/web.dom.iterable';
-import 'core-js/modules/es6.array.iterator';
-import 'core-js/modules/es7.array.includes';
-import 'core-js/modules/es6.string.includes';
+import 'core-js/modules/es.string.replace';
+import 'core-js/modules/es.string.trim';
+import 'core-js/modules/es.array.join';
+import 'core-js/modules/es.array.iterator';
+import 'core-js/modules/es.array.map';
+import 'core-js/modules/es.object.to-string';
+import 'core-js/modules/es.regexp.to-string';
+import 'core-js/modules/web.dom-collections.iterator';
+import 'core-js/modules/es.array.includes';
+import 'core-js/modules/es.string.includes';
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -406,11 +410,11 @@ function pickParse(object) {
 function search(source, target) {
   var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
       _ref$canonic = _ref.canonic,
-      canonic$$1 = _ref$canonic === void 0 ? true : _ref$canonic;
+      canonic$1 = _ref$canonic === void 0 ? true : _ref$canonic;
 
-  var _source = canonic$$1 ? canonic(source) : source;
+  var _source = canonic$1 ? canonic(source) : source;
 
-  var _target = canonic$$1 ? canonic(target) : target;
+  var _target = canonic$1 ? canonic(target) : target;
 
   return _.includes(_source, _target);
 }
