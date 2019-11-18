@@ -19,6 +19,19 @@ export default [
       resolve(),  // so Rollup can find dependencies like `lodash` or `core-js`
       commonjs(), // so Rollup can transform dependencies in CommonJS to ESM
       babel(),    // uses default config in babel.config.js (targeting browsers)
+    ]
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      name: '_',
+      file: pkg.browser.replace('.js', '.min.js'),
+      format: 'umd'
+    },
+    plugins: [
+      resolve(),  // so Rollup can find dependencies like `lodash` or `core-js`
+      commonjs(), // so Rollup can transform dependencies in CommonJS to ESM
+      babel(),    // uses default config in babel.config.js (targeting browsers)
       terser()
     ]
   },

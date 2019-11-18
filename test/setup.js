@@ -1,6 +1,3 @@
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
-
 process.env.NODE_ENV = 'test'
 
 // Setting up the context with test libraries

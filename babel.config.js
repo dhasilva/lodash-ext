@@ -1,5 +1,5 @@
 module.exports = {
-  exclude: /node_modules/,
+  exclude: ['node_modules/**'],
   presets: [
     [
       '@babel/preset-env', {
@@ -9,7 +9,7 @@ module.exports = {
           chrome: '58'
         },
 
-        useBuiltIns: 'entry',
+        useBuiltIns: 'usage',
         corejs: 3
       }
     ]

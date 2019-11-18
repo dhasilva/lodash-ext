@@ -1,4 +1,14 @@
 import _ from 'lodash';
+import 'core-js/modules/es.string.replace';
+import 'core-js/modules/es.string.trim';
+import 'core-js/modules/es.array.join';
+import 'core-js/modules/es.array.iterator';
+import 'core-js/modules/es.array.map';
+import 'core-js/modules/es.object.to-string';
+import 'core-js/modules/es.regexp.to-string';
+import 'core-js/modules/web.dom-collections.iterator';
+import 'core-js/modules/es.array.includes';
+import 'core-js/modules/es.string.includes';
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
