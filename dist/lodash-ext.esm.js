@@ -1,14 +1,20 @@
+import 'core-js/modules/es.array.concat';
+import 'core-js/modules/es.array.filter';
+import 'core-js/modules/es.array.find';
+import 'core-js/modules/es.array.includes';
+import 'core-js/modules/es.array.map';
+import 'core-js/modules/es.array.slice';
+import 'core-js/modules/es.string.ends-with';
+import 'core-js/modules/es.string.includes';
+import 'core-js/modules/es.string.starts-with';
+import 'core-js/modules/es.string.trim';
 import _ from 'lodash';
 import 'core-js/modules/es.string.replace';
-import 'core-js/modules/es.string.trim';
 import 'core-js/modules/es.array.join';
 import 'core-js/modules/es.array.iterator';
-import 'core-js/modules/es.array.map';
 import 'core-js/modules/es.object.to-string';
 import 'core-js/modules/es.regexp.to-string';
 import 'core-js/modules/web.dom-collections.iterator';
-import 'core-js/modules/es.array.includes';
-import 'core-js/modules/es.string.includes';
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -500,4 +506,54 @@ lodashExt.mixin({
   unaccent: _.deburr
 });
 
+var camelize = lodashExt.camelCase;
+var clone = lodashExt.cloneDeep;
+var contains = lodashExt.isMatch;
+var dasherize = lodashExt.kebabCase;
+var equals = lodashExt.isEqual;
+var kebabize = lodashExt.kebabCase;
+var snakeize = lodashExt.snakeCase;
+var unaccent = lodashExt.deburr;
+var underscore = lodashExt.snakeCase; // common
+
+var assign = lodashExt.assign;
+var camelCase = lodashExt.camelCase;
+var capitalize = lodashExt.capitalize;
+var castArray = lodashExt.castArray;
+var concat = lodashExt.concat;
+var debounce = lodashExt.debounce;
+var defaults = lodashExt.defaults;
+var difference = lodashExt.difference;
+var each = lodashExt.each;
+var endsWith = lodashExt.endsWith;
+var filter = lodashExt.filter;
+var find = lodashExt.find;
+var first = lodashExt.first;
+var get = lodashExt.get;
+var groupBy = lodashExt.groupBy;
+var includes = lodashExt.includes;
+var indexOf = lodashExt.indexOf;
+var isEqual = lodashExt.isEqual;
+var kebabCase = lodashExt.kebabCase;
+var map = lodashExt.map;
+var merge = lodashExt.merge;
+var omit = lodashExt.omit;
+var omitBy = lodashExt.omitBy;
+var pick = lodashExt.pick;
+var random = lodashExt.random;
+var range = lodashExt.range;
+var reduce = lodashExt.reduce;
+var sample = lodashExt.sample;
+var set = lodashExt.set;
+var slice = lodashExt.slice;
+var some = lodashExt.some;
+var sortBy = lodashExt.sortBy;
+var startCase = lodashExt.startCase;
+var startsWith = lodashExt.startsWith;
+var sumBy = lodashExt.sumBy;
+var throttle = lodashExt.throttle;
+var trim = lodashExt.trim;
+var uniq = lodashExt.uniq;
+
 export default lodashExt;
+export { assign, blank, camelCase, camelize, camelizeKeys, canonic, capitalize, castArray, clone, concat, contains, dasherize, debounce, defaults, deleteBlanks, difference, dig, each, endsWith, equals, filter, find, first, get, groupBy, includes, indexOf, isBlank, isEqual, isPresent, kebabCase, kebabize, map, merge, omit, omitBy, parse, pick, pickParse, present, random, range, reduce, sample, search, set, slice, snakeize, snakeizeKeys, some, sortBy, startCase, startsWith, sumBy, throttle, trim, unaccent, underscore, uniq };
