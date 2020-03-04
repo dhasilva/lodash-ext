@@ -1,14 +1,22 @@
-import _ from 'lodash'
+import isPlainObject from 'lodash/isPlainObject'
+import isArray from 'lodash/isArray'
+import map from 'lodash/map'
+import reduce from 'lodash/reduce'
+import keys from 'lodash/keys'
+import each from 'lodash/each'
+import has from 'lodash/has'
+import castArray from 'lodash/castArray'
+import difference from 'lodash/difference'
 import { blank } from './blank'
 
 
 function parse(source, type, options = {}) {
-  if (_.isArray(source)) {
-    return _.map(source, (v) => parse(v, type, options))
+  if (isArray(source)) {
+    return map(source, (v) => parse(v, type, options))
   }
 
-  if (_.isPlainObject(source)) {
-    return _.reduce(_.keys(source), (parsedObj, key) => {
+  if (isPlainObject(source)) {
+    return reduce(keys(source), (parsedObj, key) => {
       parsedObj[key] = parse(source[key], type, options)
       return parsedObj
     }, {})
@@ -27,15 +35,15 @@ parse.as = function as(type, value, options = {}) {
 }
 
 parse.use = function use(parsers) {
-  _.each(parsers, (parseFn, type) => {
+  each(parsers, (parseFn, type) => {
     if (typeof parseFn !== 'function') {
       throw new Error(`[@caiena/lodash-ext] _.parse: parser for type "${type}" is not a function`)
     }
 
-    if (_.has($customParsers, type)) {
+    if (has($customParsers, type)) {
       console.warn(`[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type "${type}"`)
     }
-    else if (_.has($parsers, type)) {
+    else if (has($parsers, type)) {
       console.warn(`[@caiena/lodash-ext] _.parse: overriding default parser for type "${type}"`)
     }
 
@@ -45,14 +53,14 @@ parse.use = function use(parsers) {
 }
 
 parse.remove = function remove(customParserTypes) {
-  let types = _.castArray(customParserTypes)
-  let unknownTypes = _.difference(types, _.keys($customParsers))
+  let types = castArray(customParserTypes)
+  let unknownTypes = difference(types, keys($customParsers))
 
   if (!blank(unknownTypes)) {
     throw new Error(`[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) "${unknownTypes}"`)
   }
 
-  _.each(types, (type) => { delete $customParsers[type] })
+  each(types, (type) => { delete $customParsers[type] })
 }
 
 
@@ -153,8 +161,8 @@ const $parsers = {
     if (value == null)    return '' // null or undefined
     if (value === true)   return 'true'
     if (value === false)  return 'false'
-    if (_.isArray(value)) return value.toString()
-    if (_.isPlainObject(value)) return JSON.stringify(value)
+    if (isArray(value)) return value.toString()
+    if (isPlainObject(value)) return JSON.stringify(value)
 
     return (value && value.toString()) || defaultValue
   },

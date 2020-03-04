@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import deburr from 'lodash/deburr'
 
 
 /**
@@ -14,7 +14,7 @@ import _ from 'lodash'
 function canonic(string) {
   if (string == null) return string
   let text = string + ''
-  return _.deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase()
+  return deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase()
 }
 
 

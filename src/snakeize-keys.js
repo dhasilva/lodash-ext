@@ -1,4 +1,8 @@
-import _ from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import forOwn from 'lodash/forOwn'
+import isPlainObject from 'lodash/isPlainObject'
+import isArray from 'lodash/isArray'
+import snakeCase from 'lodash/snakeCase'
 
 /**
  * Creates a new object transforming all of its properties to snake_case format.
@@ -15,18 +19,18 @@ import _ from 'lodash'
  * @return {Object}        "clone" object with all keys/properties in snake_case format
  */
 function deepSnakeizeKeys(object) {
-  let snakeized = _.cloneDeep(object)
+  let snakeized = cloneDeep(object)
 
-  _.forOwn(object, (value, key) => {
+  forOwn(object, (value, key) => {
 
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
-    if (_.isPlainObject(value) || _.isArray(value)) {
+    if (isPlainObject(value) || isArray(value)) {
       value = deepSnakeizeKeys(value)
       snakeized[key] = value
     }
 
-    const snakeizedKey = _.snakeCase(key)
+    const snakeizedKey = snakeCase(key)
     if (snakeizedKey !== key) {
       snakeized[snakeizedKey] = value
       delete snakeized[key]
@@ -40,7 +44,7 @@ function snakeizeKeys(value) {
   if (typeof (value) === 'object') {
     return deepSnakeizeKeys(value)
   }
-  return _.snakeCase(value)
+  return snakeCase(value)
 }
 
 

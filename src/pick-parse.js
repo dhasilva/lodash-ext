@@ -1,4 +1,8 @@
-import _ from 'lodash'
+import _keys from 'lodash/keys'
+import pick from 'lodash/pick'
+import reduce from 'lodash/reduce'
+import get from 'lodash/get'
+import set from 'lodash/set'
 import _parse from './parse'
 
 
@@ -44,15 +48,15 @@ import _parse from './parse'
  * @return {Object}         Objeto resultado da interpretação definida
  */
 function pickParse(object, config = {}, options = {}) {
-  let keys = _.keys(config)
-  let picked = _.pick(object, keys)
+  let keys = _keys(config)
+  let picked = pick(object, keys)
 
-  return _.reduce(keys, (pickedAndParsed, key) => {
-    let type = _.get(config, key)
-    let value = _.get(picked, key)
+  return reduce(keys, (pickedAndParsed, key) => {
+    let type = get(config, key)
+    let value = get(picked, key)
 
     let parsed = _parse(value, type, options)
-    _.set(pickedAndParsed, key, parsed)
+    set(pickedAndParsed, key, parsed)
 
     return pickedAndParsed
   }, {})

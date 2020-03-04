@@ -5,6 +5,29 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var _ = _interopDefault(require('lodash'));
+var cloneDeep = _interopDefault(require('lodash/cloneDeep'));
+var forOwn = _interopDefault(require('lodash/forOwn'));
+var isPlainObject = _interopDefault(require('lodash/isPlainObject'));
+var isArray = _interopDefault(require('lodash/isArray'));
+var camelCase = _interopDefault(require('lodash/camelCase'));
+var deburr = _interopDefault(require('lodash/deburr'));
+var remove = _interopDefault(require('lodash/remove'));
+var isEmpty = _interopDefault(require('lodash/isEmpty'));
+var isNumber = _interopDefault(require('lodash/isNumber'));
+var isNaN$1 = _interopDefault(require('lodash/isNaN'));
+var join = _interopDefault(require('lodash/join'));
+var get = _interopDefault(require('lodash/get'));
+var map = _interopDefault(require('lodash/map'));
+var reduce = _interopDefault(require('lodash/reduce'));
+var keys = _interopDefault(require('lodash/keys'));
+var each = _interopDefault(require('lodash/each'));
+var has = _interopDefault(require('lodash/has'));
+var castArray = _interopDefault(require('lodash/castArray'));
+var difference = _interopDefault(require('lodash/difference'));
+var pick = _interopDefault(require('lodash/pick'));
+var set = _interopDefault(require('lodash/set'));
+var includes = _interopDefault(require('lodash/includes'));
+var snakeCase = _interopDefault(require('lodash/snakeCase'));
 
 /**
  * Creates a new object, transforming all of its properties to camelCase format.
@@ -22,24 +45,22 @@ var _ = _interopDefault(require('lodash'));
  */
 
 function deepCamelizeKeys(object) {
-  let camelized = _.cloneDeep(object);
-
-  _.forOwn(object, (value, key) => {
+  let camelized = cloneDeep(object);
+  forOwn(object, (value, key) => {
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
-    if (_.isPlainObject(value) || _.isArray(value)) {
+    if (isPlainObject(value) || isArray(value)) {
       value = deepCamelizeKeys(value);
       camelized[key] = value;
     }
 
-    const camelizedKey = _.camelCase(key);
+    const camelizedKey = camelCase(key);
 
     if (camelizedKey !== key) {
       camelized[camelizedKey] = value;
       delete camelized[key];
     }
   });
-
   return camelized;
 }
 
@@ -48,7 +69,7 @@ function camelizeKeys(value) {
     return deepCamelizeKeys(value);
   }
 
-  return _.camelCase(value);
+  return camelCase(value);
 }
 
 /**
@@ -65,7 +86,7 @@ function camelizeKeys(value) {
 function canonic(string) {
   if (string == null) return string;
   let text = string + '';
-  return _.deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase();
+  return deburr(text.trim().replace(/\s{2,}/g, ' ')).toLowerCase();
 }
 
 function blank(value) {
@@ -78,7 +99,7 @@ function blank(value) {
 
     default:
       // Rails like `blank?` - @https://github.com/lodash/lodash/issues/2261#issuecomment-211380044
-      return _.isEmpty(value) && !_.isNumber(value) || _.isNaN(value);
+      return isEmpty(value) && !isNumber(value) || isNaN$1(value);
   }
 }
 
@@ -112,14 +133,13 @@ function isPresent(...args) {
  */
 
 function deleteBlanks(object) {
-  let result = _.cloneDeep(object);
-
-  _.forOwn(result, (value, key) => {
-    if (_.isPlainObject(value) || _.isArray(value)) {
+  let result = cloneDeep(object);
+  forOwn(result, (value, key) => {
+    if (isPlainObject(value) || isArray(value)) {
       result[key] = deleteBlanks(value);
 
-      if (_.isArray(result[key])) {
-        _.remove(result[key], blank);
+      if (isArray(result[key])) {
+        remove(result[key], blank);
       }
 
       if (blank(result[key])) {
@@ -130,8 +150,8 @@ function deleteBlanks(object) {
     }
   });
 
-  if (_.isArray(result)) {
-    _.remove(result, blank);
+  if (isArray(result)) {
+    remove(result, blank);
   }
 
   return result;
@@ -158,19 +178,17 @@ function deleteBlanks(object) {
 function dig(object, ...keys) {
   // _.dig(family, 'parent', 'child') => _.get(family, 'parent.child')
   console.warn('[DEPRECATED] _.dig is deprecated. Use _.get instead.');
-
-  let path = _.join(keys, '.');
-
-  return _.get(object, path);
+  let path = join(keys, '.');
+  return get(object, path);
 }
 
 function parse(source, type, options = {}) {
-  if (_.isArray(source)) {
-    return _.map(source, v => parse(v, type, options));
+  if (isArray(source)) {
+    return map(source, v => parse(v, type, options));
   }
 
-  if (_.isPlainObject(source)) {
-    return _.reduce(_.keys(source), (parsedObj, key) => {
+  if (isPlainObject(source)) {
+    return reduce(keys(source), (parsedObj, key) => {
       parsedObj[key] = parse(source[key], type, options);
       return parsedObj;
     }, {});
@@ -187,14 +205,14 @@ parse.as = function as(type, value, options = {}) {
 };
 
 parse.use = function use(parsers) {
-  _.each(parsers, (parseFn, type) => {
+  each(parsers, (parseFn, type) => {
     if (typeof parseFn !== 'function') {
       throw new Error(`[@caiena/lodash-ext] _.parse: parser for type "${type}" is not a function`);
     }
 
-    if (_.has($customParsers, type)) {
+    if (has($customParsers, type)) {
       console.warn(`[@caiena/lodash-ext] _.parse: overriding already defined custom parser for type "${type}"`);
-    } else if (_.has($parsers, type)) {
+    } else if (has($parsers, type)) {
       console.warn(`[@caiena/lodash-ext] _.parse: overriding default parser for type "${type}"`);
     } // add to $customParsers
 
@@ -204,15 +222,14 @@ parse.use = function use(parsers) {
 };
 
 parse.remove = function remove(customParserTypes) {
-  let types = _.castArray(customParserTypes);
-
-  let unknownTypes = _.difference(types, _.keys($customParsers));
+  let types = castArray(customParserTypes);
+  let unknownTypes = difference(types, keys($customParsers));
 
   if (!blank(unknownTypes)) {
     throw new Error(`[@caiena/lodash-ext] _.parse: can't remove parser for unknown custom type(s) "${unknownTypes}"`);
   }
 
-  _.each(types, type => {
+  each(types, type => {
     delete $customParsers[type];
   });
 };
@@ -317,8 +334,8 @@ const $parsers = {
 
     if (value === true) return 'true';
     if (value === false) return 'false';
-    if (_.isArray(value)) return value.toString();
-    if (_.isPlainObject(value)) return JSON.stringify(value);
+    if (isArray(value)) return value.toString();
+    if (isPlainObject(value)) return JSON.stringify(value);
     return value && value.toString() || defaultValue;
   }
 
@@ -367,19 +384,16 @@ const $parsers = {
  */
 
 function pickParse(object, config = {}, options = {}) {
-  let keys = _.keys(config);
+  let keys$1 = keys(config);
 
-  let picked = _.pick(object, keys);
-
-  return _.reduce(keys, (pickedAndParsed, key) => {
-    let type = _.get(config, key);
-
-    let value = _.get(picked, key);
+  let picked = pick(object, keys$1);
+  return reduce(keys$1, (pickedAndParsed, key) => {
+    let type = get(config, key);
+    let value = get(picked, key);
 
     let parsed = parse(value, type, options);
 
-    _.set(pickedAndParsed, key, parsed);
-
+    set(pickedAndParsed, key, parsed);
     return pickedAndParsed;
   }, {});
 }
@@ -391,7 +405,7 @@ function search(source, target, {
 
   let _target = canonic$1 ? canonic(target) : target;
 
-  return _.includes(_source, _target);
+  return includes(_source, _target);
 }
 
 /**
@@ -410,24 +424,22 @@ function search(source, target, {
  */
 
 function deepSnakeizeKeys(object) {
-  let snakeized = _.cloneDeep(object);
-
-  _.forOwn(object, (value, key) => {
+  let snakeized = cloneDeep(object);
+  forOwn(object, (value, key) => {
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
-    if (_.isPlainObject(value) || _.isArray(value)) {
+    if (isPlainObject(value) || isArray(value)) {
       value = deepSnakeizeKeys(value);
       snakeized[key] = value;
     }
 
-    const snakeizedKey = _.snakeCase(key);
+    const snakeizedKey = snakeCase(key);
 
     if (snakeizedKey !== key) {
       snakeized[snakeizedKey] = value;
       delete snakeized[key];
     }
   });
-
   return snakeized;
 }
 
@@ -436,7 +448,7 @@ function snakeizeKeys(value) {
     return deepSnakeizeKeys(value);
   }
 
-  return _.snakeCase(value);
+  return snakeCase(value);
 }
 
 const lodashExt = _.runInContext();

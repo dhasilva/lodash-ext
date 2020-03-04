@@ -1,4 +1,6 @@
-import _ from 'lodash'
+import isEmpty from 'lodash/isEmpty'
+import isNumber from 'lodash/isNumber'
+import isNaN from 'lodash/isNaN'
 
 // inspired by Rails/ActiveSupport Object#blank?
 function blank(value) {
@@ -7,7 +9,7 @@ function blank(value) {
     case 'boolean': return false
     default:
       // Rails like `blank?` - @https://github.com/lodash/lodash/issues/2261#issuecomment-211380044
-      return (_.isEmpty(value) && !_.isNumber(value)) || _.isNaN(value)
+      return (isEmpty(value) && !isNumber(value)) || isNaN(value)
   }
 }
 

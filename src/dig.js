@@ -1,4 +1,5 @@
-import _ from 'lodash'
+import join from 'lodash/join'
+import get from 'lodash/get'
 
 /**
  * "Digs" the object searching for nested properties, ensuring it exists - or returning null.
@@ -21,8 +22,8 @@ function dig(object, ...keys) {
   // _.dig(family, 'parent', 'child') => _.get(family, 'parent.child')
   console.warn('[DEPRECATED] _.dig is deprecated. Use _.get instead.')
 
-  let path = _.join(keys, '.')
-  return _.get(object, path)
+  let path = join(keys, '.')
+  return get(object, path)
 }
 
 

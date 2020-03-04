@@ -1,4 +1,9 @@
-import _ from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import forOwn from 'lodash/forOwn'
+import isPlainObject from 'lodash/isPlainObject'
+import isArray from 'lodash/isArray'
+import remove from 'lodash/remove'
+
 import { blank } from './blank'
 
 /**
@@ -15,14 +20,14 @@ import { blank } from './blank'
  * @return {Object}        new object without the "blank" properties
  */
 function deleteBlanks(object) {
-  let result = _.cloneDeep(object)
+  let result = cloneDeep(object)
 
-  _.forOwn(result, (value, key) => {
-    if (_.isPlainObject(value) || _.isArray(value)) {
+  forOwn(result, (value, key) => {
+    if (isPlainObject(value) || isArray(value)) {
       result[key] = deleteBlanks(value)
 
-      if (_.isArray(result[key])) {
-        _.remove(result[key], blank)
+      if (isArray(result[key])) {
+        remove(result[key], blank)
       }
 
       if (blank(result[key])) {
@@ -34,8 +39,8 @@ function deleteBlanks(object) {
     }
   })
 
-  if (_.isArray(result)) {
-    _.remove(result, blank)
+  if (isArray(result)) {
+    remove(result, blank)
   }
 
   return result

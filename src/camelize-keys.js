@@ -1,4 +1,8 @@
-import _ from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import forOwn from 'lodash/forOwn'
+import isPlainObject from 'lodash/isPlainObject'
+import isArray from 'lodash/isArray'
+import camelCase from 'lodash/camelCase'
 
 /**
  * Creates a new object, transforming all of its properties to camelCase format.
@@ -15,18 +19,18 @@ import _ from 'lodash'
  * @return {Object}        "clone" object with all keys/properties in camelCase format
  */
 function deepCamelizeKeys(object) {
-  let camelized = _.cloneDeep(object)
+  let camelized = cloneDeep(object)
 
-  _.forOwn(object, (value, key) => {
+  forOwn(object, (value, key) => {
 
     // checks that a value is a plain object or an array - for recursive key conversion
     // recursively update keys of any values that are also objects
-    if (_.isPlainObject(value) || _.isArray(value)) {
+    if (isPlainObject(value) || isArray(value)) {
       value = deepCamelizeKeys(value)
       camelized[key] = value
     }
 
-    const camelizedKey = _.camelCase(key)
+    const camelizedKey = camelCase(key)
     if (camelizedKey !== key) {
       camelized[camelizedKey] = value
       delete camelized[key]
@@ -40,7 +44,7 @@ function camelizeKeys(value) {
   if (typeof (value) === 'object') {
     return deepCamelizeKeys(value)
   }
-  return _.camelCase(value)
+  return camelCase(value)
 }
 
 
