@@ -1,4 +1,6 @@
 import _ from 'lodash'
+import camelize from './camelize'
+
 
 /**
  * Creates a new object, transforming all of its properties to camelCase format.
@@ -26,7 +28,7 @@ function deepCamelizeKeys(object) {
       camelized[key] = value
     }
 
-    const camelizedKey = _.camelCase(key)
+    const camelizedKey = camelize(key)
     if (camelizedKey !== key) {
       camelized[camelizedKey] = value
       delete camelized[key]
@@ -40,7 +42,7 @@ function camelizeKeys(value) {
   if (typeof (value) === 'object') {
     return deepCamelizeKeys(value)
   }
-  return _.camelCase(value)
+  return camelize(value)
 }
 
 

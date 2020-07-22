@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import snakeize from './snakeize'
 
 /**
  * Creates a new object transforming all of its properties to snake_case format.
@@ -26,7 +27,7 @@ function deepSnakeizeKeys(object) {
       snakeized[key] = value
     }
 
-    const snakeizedKey = _.snakeCase(key)
+    const snakeizedKey = snakeize(key)
     if (snakeizedKey !== key) {
       snakeized[snakeizedKey] = value
       delete snakeized[key]
@@ -40,7 +41,7 @@ function snakeizeKeys(value) {
   if (typeof (value) === 'object') {
     return deepSnakeizeKeys(value)
   }
-  return _.snakeCase(value)
+  return snakeize(value)
 }
 
 

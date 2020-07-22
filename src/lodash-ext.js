@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import camelize from './camelize'
 import camelizeKeys from './camelize-keys'
 import canonic from './canonic'
 import deleteBlanks from './delete-blanks'
@@ -7,6 +8,7 @@ import { blank, isBlank, present, isPresent } from './blank'
 import parse from './parse'
 import pickParse from './pick-parse'
 import search from './search'
+import snakeize from './snakeize'
 import snakeizeKeys from './snakeize-keys'
 
 
@@ -34,12 +36,12 @@ lodashExt.mixin({
   pickParse,
 
   // aliasing commonly used functions
-  camelize:   _.camelCase,
+  camelize,
   // capitalize: _.capitalize,
   dasherize:  _.kebabCase,
   kebabize:   _.kebabCase,
-  underscore: _.snakeCase,
-  snakeize:   _.snakeCase,
+  snakeize,
+  underscore: snakeize,
 
   clone:    _.cloneDeep,
   // extend:   _.extend,

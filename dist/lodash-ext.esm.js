@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import 'core-js/modules/es.array.concat';
+import 'core-js/modules/es.string.starts-with';
 import 'core-js/modules/es.string.replace';
 import 'core-js/modules/es.string.trim';
 import 'core-js/modules/es.array.join';
@@ -9,6 +11,34 @@ import 'core-js/modules/es.regexp.to-string';
 import 'core-js/modules/web.dom-collections.iterator';
 import 'core-js/modules/es.array.includes';
 import 'core-js/modules/es.string.includes';
+
+var IGNORED_LEADING_CHARS = ["_", "$"];
+/**
+ * Similar to _.camelCase(), but it keeps leading "_" or "$" in place.
+ * Useful when handling (fetching) API data.
+ *
+ * usage:
+ * ```js
+ * let propName = "_private_attr"
+ * _.camelize(propName)
+ * // => "_privateAttr"
+ * ````
+ *
+ * @param  {String} value source string to be transformed to camelCase
+ * @return {String}        "clone" string in camelCase format
+ */
+
+function camelize(value) {
+  if (value == null) return null;
+
+  if (_.some(IGNORED_LEADING_CHARS, function (ignoredChar) {
+    return _.startsWith(value, ignoredChar);
+  })) {
+    return "".concat(value[0]).concat(camelize(value.substr(1)));
+  }
+
+  return _.camelCase(value);
+}
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -50,7 +80,7 @@ function deepCamelizeKeys(object) {
       camelized[key] = value;
     }
 
-    var camelizedKey = _.camelCase(key);
+    var camelizedKey = camelize(key);
 
     if (camelizedKey !== key) {
       camelized[camelizedKey] = value;
@@ -66,7 +96,7 @@ function camelizeKeys(value) {
     return deepCamelizeKeys(value);
   }
 
-  return _.camelCase(value);
+  return camelize(value);
 }
 
 /**
@@ -419,6 +449,34 @@ function search(source, target) {
   return _.includes(_source, _target);
 }
 
+var IGNORED_LEADING_CHARS$1 = ["_", "$"];
+/**
+ * Similar to _.snakeCase(), but it keeps leading "_" or "$" in place.
+ * Useful when handling (fetching) API data.
+ *
+ * usage:
+ * ```js
+ * let propName = "_private_attr"
+ * _.snakeize(propName)
+ * // => "_private_attr"
+ * ````
+ *
+ * @param  {String} value source string to be transformed to snake_case
+ * @return {String}        "clone" string in snake_case format
+ */
+
+function snakeize(value) {
+  if (value == null) return null;
+
+  if (_.some(IGNORED_LEADING_CHARS$1, function (ignoredChar) {
+    return _.startsWith(value, ignoredChar);
+  })) {
+    return "".concat(value[0]).concat(snakeize(value.substr(1)));
+  }
+
+  return _.snakeCase(value);
+}
+
 /**
  * Creates a new object transforming all of its properties to snake_case format.
  * Useful when handling (fetching) API data.
@@ -445,7 +503,7 @@ function deepSnakeizeKeys(object) {
       snakeized[key] = value;
     }
 
-    var snakeizedKey = _.snakeCase(key);
+    var snakeizedKey = snakeize(key);
 
     if (snakeizedKey !== key) {
       snakeized[snakeizedKey] = value;
@@ -461,7 +519,7 @@ function snakeizeKeys(value) {
     return deepSnakeizeKeys(value);
   }
 
-  return _.snakeCase(value);
+  return snakeize(value);
 }
 
 var lodashExt = _.runInContext();
@@ -486,12 +544,12 @@ lodashExt.mixin({
   parse: parse,
   pickParse: pickParse,
   // aliasing commonly used functions
-  camelize: _.camelCase,
+  camelize: camelize,
   // capitalize: _.capitalize,
   dasherize: _.kebabCase,
   kebabize: _.kebabCase,
-  underscore: _.snakeCase,
-  snakeize: _.snakeCase,
+  snakeize: snakeize,
+  underscore: snakeize,
   clone: _.cloneDeep,
   // extend:   _.extend,
   // merge:    _.merge,
