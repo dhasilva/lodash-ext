@@ -23,6 +23,7 @@
     "mocha": "^6.2.2",
     "moment": "^2.24.0",
     "node-watch": "^0.6.3",
+    "pryjs": "^1.0.3",
     "rollup": "^1.27.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",

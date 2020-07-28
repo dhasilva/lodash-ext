@@ -4,6 +4,7 @@ import camelizeKeys from './camelize-keys'
 import canonic from './canonic'
 import deleteBlanks from './delete-blanks'
 import dig from './dig'
+import except from './except'
 import { blank, isBlank, present, isPresent } from './blank'
 import parse from './parse'
 import pickParse from './pick-parse'
@@ -20,6 +21,7 @@ lodashExt.mixin({
   snakeizeKeys,
   deleteBlanks,
   dig,
+  except,
 
   // rails like #blank? and #present?
   blank,
@@ -49,7 +51,10 @@ lodashExt.mixin({
   equals:   _.isEqual,
   contains: _.isMatch,
 
-  unaccent: _.deburr
+  unaccent: _.deburr,
+
+  all: _.every,
+  any: _.some
 })
 
 

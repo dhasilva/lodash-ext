@@ -12,8 +12,8 @@ import chaiSubset from 'chai-subset'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
-// // debugging
-// import pry from 'pryjs'
+// debugging
+import pry from 'pryjs'
 
 chai.use(chaiAsPromised)
 chai.use(chaiChange)
@@ -31,9 +31,9 @@ global.sinon = sinon
 // checkout http://sinonjs.org/releases/v4.4.2/sandbox/
 
 
-// // exporting pryjs
-// // to debug, call a `eval(pry.it)` anywhere on the code
-// global.pry = pry
+// exporting pryjs
+// to debug, call a `eval(pry.it)` anywhere on the code
+global.pry = pry
 
 
 // exporting the lib globally
