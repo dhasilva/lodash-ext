@@ -11726,7 +11726,7 @@
 	    return "".concat(value[0]).concat(snakeize(value.substr(1)));
 	  }
 
-	  return lodash.snakeCase(value);
+	  return lodash.snakeCase(value).replace(/_(\d)/g, '$1');
 	}
 
 	/**

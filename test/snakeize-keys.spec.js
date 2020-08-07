@@ -11,7 +11,7 @@ describe('_.snakeizeKeys(object)', () => {
       key: 'nested.1',
       'kebab-key': 'nested.2',
       snake_key: 'nested.tree',
-      camelKey: 'neste.cu4tro'
+      camelKey2: 'nested.cu4tro'
     }
   }
   let snakeizes = _.snakeizeKeys(object)
@@ -48,8 +48,8 @@ describe('_.snakeizeKeys(object)', () => {
     })
 
     it('snakeizes nested keys', () => {
-      expect(_.get(snakeizes, 'nested.camel_key')).to.equal(_.get(object, 'nested.camelKey'))
-      expect(_.has(snakeizes, 'nested.camelKey')).to.be.false
+      expect(_.get(snakeizes, 'nested.camel_key2')).to.equal(_.get(object, 'nested.camelKey2'))
+      expect(_.has(snakeizes, 'nested.camelKey2')).to.be.false
     })
   })
 

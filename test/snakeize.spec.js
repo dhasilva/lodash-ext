@@ -23,4 +23,10 @@ describe('_.snakeize(string)', () => {
     })
   })
 
+  describe('when word ends with number', () => {
+    it('removes extra _', () => {
+      expect(_.snakeize("addressLine2Paragraph3")).to.equal("address_line2_paragraph3")
+    })
+  })
+
 })

@@ -480,7 +480,7 @@ function snakeize(value) {
     return `${value[0]}${snakeize(value.substr(1))}`;
   }
 
-  return _.snakeCase(value);
+  return _.snakeCase(value).replace(/_(\d)/g, '$1');
 }
 
 /**

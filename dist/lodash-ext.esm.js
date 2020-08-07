@@ -515,7 +515,7 @@ function snakeize(value) {
     return "".concat(value[0]).concat(snakeize(value.substr(1)));
   }
 
-  return _.snakeCase(value);
+  return _.snakeCase(value).replace(/_(\d)/g, '$1');
 }
 
 /**
